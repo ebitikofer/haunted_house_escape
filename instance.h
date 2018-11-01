@@ -194,10 +194,10 @@ void animation(void) {
           exit(EXIT_SUCCESS);
           break;
         // Walking
-        case 'w': { z_distance -= RATE_PLAYER; axial -= RATE_PLAYER; forward = true; i++; } break; //wire
-        case 's': { z_distance += RATE_PLAYER; axial += RATE_PLAYER; backward = true; i++; } break; //wire
-        case 'a': { x_distance -= RATE_PLAYER; strafe -= RATE_PLAYER; left = true; i++; } break; //wire
-        case 'd': { x_distance += RATE_PLAYER; strafe += RATE_PLAYER; right = true; i++; } break; //wire
+        case 'w': { z_distance -= RATE_PLAYER; mvz -= RATE_PLAYER; forward = true; i++; } break; //wire
+        case 's': { z_distance += RATE_PLAYER; mvz += RATE_PLAYER; backward = true; i++; } break; //wire
+        case 'a': { x_distance -= RATE_PLAYER; mvx -= RATE_PLAYER; left = true; i++; } break; //wire
+        case 'd': { x_distance += RATE_PLAYER; mvx += RATE_PLAYER; right = true; i++; } break; //wire
         // Shoot
         case ' ': { if (reload) { fire = true; darts--; } i++; } break; //fire
         // Dart Selection
