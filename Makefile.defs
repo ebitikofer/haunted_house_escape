@@ -1,0 +1,29 @@
+# This file contains definitions common to all makefiles in
+# subdirectories. Changing this one file therefore modifies all
+# makefiles below this one as they include these definitions.
+
+#
+# Written by David Chelberg (dmc)
+# last-modified: Tue Sep 20 17:26:55 2016
+
+# What compiler do you want to use for c++ files?
+CC = g++
+
+# Compiler options -g for debug info
+GCC_OPTIONS= -pedantic -g -std=c++11
+
+# What libraries to link GLU is included for backwards compatibility
+LDLIBS = -lGL -lGLU /usr/lib/x86_64-linux-gnu/libglut.so.3 /usr/lib/x86_64-linux-gnu/libGLEW.so.2.0
+
+# Not sure why the following won't work.  Probably a misconfigured Ubuntu.
+#LDLIBS = -lGL -lglut
+
+# Where to find the include files
+INCS = -I/usr/local/include/ -I/home/e/School/4250cs/code-egs/  -I/home/e/School/4250cs/code-egs/angel06/include/
+
+# options to pass to the compiler (all the gcc ones, and the where to
+# find the includes).
+OPTIONS=$(GCC_OPTIONS) $(INCS)
+
+# program to link in compiling all binaries that initialize shaders
+InitShader = /home/e/School/4250cs/code-egs/angel06/Common/InitShader.o
