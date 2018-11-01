@@ -17,3 +17,6 @@ all: $(OBJECTS)
 
 clean:
 	rm -f $(OBJECTS) *~
+
+shader:
+	$(MAKE) -C angel06/Common InitShader.o

@@ -5,7 +5,7 @@
 #CC = /opt/csw/bin/g++
 GCC_OPTIONS= -pedantic -I ../../include -g
 LDLIBS = -L/usr/local/lib/ -L/usr/X11R6/lib -lX11 -lXi -lXmu  -lGLEW -lGL -lGLU  -lglut -lm
-INCS = -I/usr/local/include/ -I/home/e/School/cs4250/code-egs/ -I../include/
+INCS = -I/usr/local/include/ -I../../ -I../include/
 OPTIONS=$(GCC_OPTIONS) $(INCS)
 
 InitShader.o: InitShader.cpp

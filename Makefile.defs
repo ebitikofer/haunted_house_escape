@@ -19,11 +19,11 @@ LDLIBS = -lGL -lGLU /usr/lib/x86_64-linux-gnu/libglut.so.3 /usr/lib/x86_64-linux
 #LDLIBS = -lGL -lglut
 
 # Where to find the include files
-INCS = -I/usr/local/include/ -I/home/e/School/4250cs/code-egs/  -I/home/e/School/4250cs/code-egs/angel06/include/
+INCS = -I/usr/local/include/ -I. -I./angel06/include/
 
 # options to pass to the compiler (all the gcc ones, and the where to
 # find the includes).
 OPTIONS=$(GCC_OPTIONS) $(INCS)
 
 # program to link in compiling all binaries that initialize shaders
-InitShader = /home/e/School/4250cs/code-egs/angel06/Common/InitShader.o
+InitShader = ./angel06/Common/InitShader.o
