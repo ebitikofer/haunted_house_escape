@@ -17,10 +17,10 @@ CAMERA CONTROLS:
 :arrow_left:: yaw left  
 :arrow_right:: yaw right  
 
-W: axially forward  
-S: axiall backward  
-A: strafe left  
-D: strafe right  
+**W**: axially forward  
+**S**: axiall backward  
+**A**: strafe left  
+**D**: strafe right  
 
 TODO:
 
