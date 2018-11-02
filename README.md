@@ -10,6 +10,18 @@ Instructions:
     make
     ./game
 
+CAMERA CONTROLS:
+
+UP ARROW: pitch up
+DOWN ARROW: pitch down
+LEFT ARROW: yaw left
+RIGHT ARROW: yaw right
+
+W: axially forward
+S: axiall backward
+A: strafe left
+D: strafe right
+
 TODO:
 
 ...everything
