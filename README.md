@@ -12,15 +12,15 @@ Instructions:
 
 CAMERA CONTROLS:
 
-UP ARROW: pitch up
-DOWN ARROW: pitch down
-LEFT ARROW: yaw left
-RIGHT ARROW: yaw right
+:arrow_up:: pitch up  
+:arrow_down:: pitch down  
+:arrow_left:: yaw left  
+:arrow_right:: yaw right  
 
-W: axially forward
-S: axiall backward
-A: strafe left
-D: strafe right
+W: axially forward  
+S: axiall backward  
+A: strafe left  
+D: strafe right  
 
 TODO:
 

@@ -23,31 +23,6 @@ const int NumVertices = 36; // (6 faces)(2 triangles/face)(3 vertices/triangle)
 const int NumNodes = 11;
 const int NumAngles = 11;
 
-// glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f); // Position
-
-// glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f); // Direction
-// glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-
-// glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f); // Right Axis
-// glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-
-// glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight); // Up Axis
-
-// glm::mat4 view; // Look At
-// view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),
-//   		   glm::vec3(0.0f, 0.0f, 0.0f),
-//   		   glm::vec3(0.0f, 1.0f, 0.0f));
-
-// float radius = 10.0f;
-// float camX = sin(glfwGetTime()) * radius;
-// float camZ = cos(glfwGetTime()) * radius;
-// glm::mat4 view;
-// view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-
-// glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
-// glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-// glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
-
 typedef Angel::vec4 point4;
 typedef Angel::vec4 color4;
 
@@ -56,24 +31,23 @@ color4 colors[NumVertices];
 
 GLUquadricObj *qobj; // For drawing cylinders
 
-GLuint camera_view;  // camera-view matrix uniform shader variable location
+GLuint camera_view; // camera-view matrix uniform shader variable location
 GLuint model_view;  // model-view matrix uniform shader variable location
-GLuint projection; // projection matrix uniform shader variable location
+GLuint projection;  // projection matrix uniform shader variable location
+GLuint color_change;  // projection matrix uniform shader variable location
 
-mat4 p;
-mat4 mv;
-mat4 cv;
-mat4 pv;
+mat4 p, mv, cv, pv; // shader variables
+vec4 cc;
 
 // Globals to control moving around a scene.
 GLfloat mvx = 0.0;
 GLfloat mvz = 0.0;
 
 // Projection transformation parameters
-GLfloat fovy = 65.0;  // Field-of-view in Y direction angle (in degrees)
-GLfloat zNear = 0.5, zFar = 500.0; //GLfloat zNear = 0.1, zFar = 300.0;
-
-GLfloat aspect; // Viewport aspect ratio
+GLfloat fovy = 65.0;    // Field-of-view in Y direction angle (in degrees)
+GLfloat zNear = 0.5;     // Near clipping plane
+GLfloat zFar = 500.0;   // Far clipping plane
+GLfloat aspect;         // Viewport aspect ratio
 
 // Title bar modifiers
 std::string title_bar;
@@ -105,6 +79,32 @@ color4 vertex_colors[8] = {
 
 };
 
+color4 old_colors[8] = {
+
+  color4(0.0, 0.0, 0.0, 1.0),  // black
+  color4(1.0, 0.0, 0.0, 1.0),  // red
+  color4(1.0, 1.0, 0.0, 1.0),  // yellow
+  color4(0.0, 1.0, 0.0, 1.0),  // green
+  color4(0.0, 0.0, 1.0, 1.0),  // blue
+  color4(1.0, 0.0, 1.0, 1.0),  // magenta
+  color4(1.0, 1.0, 1.0, 1.0),  // white
+  color4(0.0, 1.0, 1.0, 1.0)   // cyan
+
+};
+
+color4 new_colors[8] = {
+
+  color4(0.5, 0.3, 0.1, 1.0),  // brown
+  color4(0.5, 0.3, 0.1, 1.0),  // brown
+  color4(0.5, 0.3, 0.1, 1.0),  // brown
+  color4(0.5, 0.3, 0.1, 1.0),  // brown
+  color4(0.5, 0.3, 0.1, 1.0),  // brown
+  color4(0.5, 0.3, 0.1, 1.0),  // brown
+  color4(0.5, 0.3, 0.1, 1.0),  // brown
+  color4(0.5, 0.3, 0.1, 1.0),  // brown
+
+};
+
 point4 vertices[8] = {
 
   point4(-0.5, -0.5,  0.5, 1.0),
@@ -133,6 +133,8 @@ void quad(int a, int b, int c, int d) {
 // generate 12 triangles: 36 vertices and 36 colors
 void cube() {
 
+  Index = 0;
+
   quad(1, 0, 3, 2);
   quad(2, 3, 7, 6);
   quad(3, 0, 4, 7);
@@ -143,12 +145,13 @@ void cube() {
 }
 
 //
-void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z,GLfloat w, GLfloat h, GLfloat d, int pitch, int yaw, int roll, int sl, int st, int type) {
+void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d, GLfloat r, GLfloat g, GLfloat b, int pitch, int yaw, int roll, int sl, int st, int type) {
 
     mat4 instance = (
       Translate( x, y, z )
       * RotateX(pitch) * RotateY(yaw) * RotateZ(roll)
     );
+    glUniform4fv( color_change, 1, vec4(r, g, b, 1.0) );
     switch (type) {
       case 0:
         glUniformMatrix4fv( uniform, 1, GL_TRUE, matrix * instance * Scale( w, h, d ) );
@@ -253,6 +256,7 @@ void init(int argc, char **argv) {
   model_view = glGetUniformLocation(program, "model_view");
   camera_view = glGetUniformLocation(program, "camera_view");
   projection = glGetUniformLocation(program, "projection");
+  color_change = glGetUniformLocation(program, "color_change");
 
   glEnable(GL_DEPTH_TEST);
   glClearColor(1.0, 1.0, 1.0, 1.0);

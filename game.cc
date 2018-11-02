@@ -69,18 +69,18 @@ void display(void) {
   // object(mv, model_view, 2.0, 0.0, -2.3, FEATHER_B, FEATHER_H, FEATHER_T, 0, 0, 0, FEATHER_SL, FEATHER_ST, 1);
 
   // ENVIRONMENT
-  object(mv, model_view,   0.0, 0.0,  50.0, LAT_WALL_W * NUM_TILES, LAT_WALL_H, LAT_WALL_D, 0, 0, 0, 0, 0, 0);
-  object(mv, model_view, -50.0, 0.0,   0.0, LON_WALL_W, LON_WALL_H, LON_WALL_D * NUM_TILES, 0, 0, 0, 0, 0, 0);
-  object(mv, model_view,   0.0, 0.0, -50.0, LAT_WALL_W * NUM_TILES, LAT_WALL_H, LAT_WALL_D, 0, 0, 0, 0, 0, 0);
-  object(mv, model_view,  50.0, 0.0,   0.0, LON_WALL_W, LON_WALL_H, LON_WALL_D * NUM_TILES, 0, 0, 0, 0, 0, 0);
+  object(mv, model_view,   0.0, 0.0,  50.0, LAT_WALL_W * NUM_TILES, LAT_WALL_H, LAT_WALL_D, FLOOR_R, FLOOR_G, FLOOR_B, 0, 0, 0, 0, 0, 0);
+  object(mv, model_view, -50.0, 0.0,   0.0, LON_WALL_W, LON_WALL_H, LON_WALL_D * NUM_TILES, FLOOR_R, FLOOR_G, FLOOR_B, 0, 0, 0, 0, 0, 0);
+  object(mv, model_view,   0.0, 0.0, -50.0, LAT_WALL_W * NUM_TILES, LAT_WALL_H, LAT_WALL_D, FLOOR_R, FLOOR_G, FLOOR_B, 0, 0, 0, 0, 0, 0);
+  object(mv, model_view,  50.0, 0.0,   0.0, LON_WALL_W, LON_WALL_H, LON_WALL_D * NUM_TILES, FLOOR_R, FLOOR_G, FLOOR_B, 0, 0, 0, 0, 0, 0);
   for (i = 0; i < NUM_TILES; i++) {
     for (j = 0; j < NUM_TILES; j++) {
-      object(mv, model_view, -50.0 + (i * TILE_SIZE), -2.5, -50.0 + (j * TILE_SIZE), FLOOR_W, FLOOR_H, FLOOR_D, 0, 0, 0, 0, 0, 0);
+      object(mv, model_view, -50.0 + (i * TILE_SIZE), -2.5, -50.0 + (j * TILE_SIZE), FLOOR_W, FLOOR_H, FLOOR_D, FLOOR_R, FLOOR_G, FLOOR_B, 0, 0, 0, 0, 0, 0);
       if (i % 5 == 0) {
         if (j % 10 == 0) {
-          object(mv, model_view, -50.0 + (i * 10.0), 0.0, -50.0 + ( j / 10 * 20.0), TREE_W, TREE_H, TREE_D, -10, 45, 10, 0, 0, 0); // translate down half of the object
-          object(mv, model_view, -45.0 + (i * 10.0), 0.0, -45.0 + ( j / 10 * 20.0), ROCK_W, ROCK_H, ROCK_D, 45, 45, 45, 0, 0, 0); // translate down half of the object
-          object(mv, model_view, -30.0 + (i * 10.0), 0.0, -30.0 + ( j / 10 * 20.0), ANIMAL_W, ANIMAL_H, ANIMAL_D, 0, 0, 0, 0, 0, 0); // translate down half of the object
+          object(mv, model_view, -50.0 + (i * 10.0), 0.0, -50.0 + ( j / 10 * 20.0), TREE_W, TREE_H, TREE_D, TREE_R, TREE_G, TREE_B, -10, 45, 10, 0, 0, 0); // translate down half of the object
+          object(mv, model_view, -45.0 + (i * 10.0), 0.0, -45.0 + ( j / 10 * 20.0), ROCK_W, ROCK_H, ROCK_D, ROCK_R, ROCK_G, ROCK_B, 45, 45, 45, 0, 0, 0); // translate down half of the object
+          object(mv, model_view, -30.0 + (i * 10.0), 0.0, -30.0 + ( j / 10 * 20.0), ANIMAL_W, ANIMAL_H, ANIMAL_D, FLOOR_R, FLOOR_G, FLOOR_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
         }
       }
     }
