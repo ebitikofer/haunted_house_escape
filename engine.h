@@ -70,8 +70,8 @@ GLfloat mvx = 0.0;
 GLfloat mvz = 0.0;
 
 // Projection transformation parameters
-GLfloat fovy = 45.0;  // Field-of-view in Y direction angle (in degrees)
-GLfloat zNear = 0.5, zFar = 50.0; //GLfloat zNear = 0.1, zFar = 300.0;
+GLfloat fovy = 65.0;  // Field-of-view in Y direction angle (in degrees)
+GLfloat zNear = 0.5, zFar = 500.0; //GLfloat zNear = 0.1, zFar = 300.0;
 
 GLfloat aspect; // Viewport aspect ratio
 
@@ -94,27 +94,27 @@ std::uniform_real_distribution<double> dist_z(-10.0, -6.0);
 
 color4 vertex_colors[8] = {
 
-    color4(0.0, 0.0, 0.0, 1.0),  // black
-    color4(1.0, 0.0, 0.0, 1.0),  // red
-    color4(1.0, 1.0, 0.0, 1.0),  // yellow
-    color4(0.0, 1.0, 0.0, 1.0),  // green
-    color4(0.0, 0.0, 1.0, 1.0),  // blue
-    color4(1.0, 0.0, 1.0, 1.0),  // magenta
-    color4(1.0, 1.0, 1.0, 1.0),  // white
-    color4(0.0, 1.0, 1.0, 1.0)   // cyan
+  color4(0.0, 0.0, 0.0, 1.0),  // black
+  color4(1.0, 0.0, 0.0, 1.0),  // red
+  color4(1.0, 1.0, 0.0, 1.0),  // yellow
+  color4(0.0, 1.0, 0.0, 1.0),  // green
+  color4(0.0, 0.0, 1.0, 1.0),  // blue
+  color4(1.0, 0.0, 1.0, 1.0),  // magenta
+  color4(1.0, 1.0, 1.0, 1.0),  // white
+  color4(0.0, 1.0, 1.0, 1.0)   // cyan
 
 };
 
 point4 vertices[8] = {
 
-    point4(-0.5, -0.5,  0.5, 1.0),
-    point4(-0.5,  0.5,  0.5, 1.0),
-    point4( 0.5,  0.5,  0.5, 1.0),
-    point4( 0.5, -0.5,  0.5, 1.0),
-    point4(-0.5, -0.5, -0.5, 1.0),
-    point4(-0.5,  0.5, -0.5, 1.0),
-    point4( 0.5,  0.5, -0.5, 1.0),
-    point4( 0.5, -0.5, -0.5, 1.0)
+  point4(-0.5, -0.5,  0.5, 1.0),
+  point4(-0.5,  0.5,  0.5, 1.0),
+  point4( 0.5,  0.5,  0.5, 1.0),
+  point4( 0.5, -0.5,  0.5, 1.0),
+  point4(-0.5, -0.5, -0.5, 1.0),
+  point4(-0.5,  0.5, -0.5, 1.0),
+  point4( 0.5,  0.5, -0.5, 1.0),
+  point4( 0.5, -0.5, -0.5, 1.0)
 
 };
 
@@ -180,7 +180,7 @@ void reshape(int width, int height) {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   // gluPerspective(100.0, (GLfloat) w / (GLfloat) h, 1.0, 30.0);
-  gluPerspective(65.0, (GLfloat) width / (GLfloat) height, 1.0, 5.0);
+  gluPerspective(fovy, (GLfloat) width / (GLfloat) height, zNear, zFar);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   // glTranslatef(0.0, 1.2, -5.5);  /* viewing transform  */

@@ -32,7 +32,7 @@ GLfloat yaw = 0.0;
 GLfloat roll = 0.0;
 
 
-const GLfloat dr = 0.1; // 5.0 * DegreesToRadians;
+const GLfloat dr = 5.0; // 5.0 * DegreesToRadians;
 
 bool moving = false;
 GLfloat axial = 0.0;
@@ -157,10 +157,10 @@ void animation(void) {
 
   }
 
-  if (z_distance >= DRAW_DISTANCE) { z_distance = -DRAW_DISTANCE; regen = true; }
-  if (z_distance < -DRAW_DISTANCE) { z_distance =  DRAW_DISTANCE; regen = true; }
-  if (x_distance >= DRAW_DISTANCE) { x_distance = -DRAW_DISTANCE; regen = true; }
-  if (x_distance < -DRAW_DISTANCE) { x_distance =  DRAW_DISTANCE; regen = true; }
+  // if (z_distance >= DRAW_DISTANCE) { z_distance = -DRAW_DISTANCE; regen = true; }
+  // if (z_distance < -DRAW_DISTANCE) { z_distance =  DRAW_DISTANCE; regen = true; }
+  // if (x_distance >= DRAW_DISTANCE) { x_distance = -DRAW_DISTANCE; regen = true; }
+  // if (x_distance < -DRAW_DISTANCE) { x_distance =  DRAW_DISTANCE; regen = true; }
 
   // if (mvz >= DRAW_DISTANCE) { mvz = -DRAW_DISTANCE; regen = true; }
   // if (mvz < -DRAW_DISTANCE) { mvz =  DRAW_DISTANCE; regen = true; }
@@ -194,24 +194,28 @@ void animation(void) {
           exit(EXIT_SUCCESS);
           break;
         // Walking
-        case 'w': { z_distance -= RATE_PLAYER; mvz -= RATE_PLAYER; forward = true; i++; } break; //wire
-        case 's': { z_distance += RATE_PLAYER; mvz += RATE_PLAYER; backward = true; i++; } break; //wire
-        case 'a': { x_distance -= RATE_PLAYER; mvx -= RATE_PLAYER; left = true; i++; } break; //wire
-        case 'd': { x_distance += RATE_PLAYER; mvx += RATE_PLAYER; right = true; i++; } break; //wire
+        case 'w': { z_distance -= RATE_PLAYER; axial  = -RATE_PLAYER; mvz -= sin(theta*M_PI/180); mvx -= cos(theta*M_PI/180); forward = true; } break; //wire
+        case 's': { z_distance += RATE_PLAYER; axial  = RATE_PLAYER; mvz += sin(theta*M_PI/180); mvx += cos(theta*M_PI/180); backward = true; } break; //wire
+        case 'a': { x_distance -= RATE_PLAYER; strafe = -RATE_PLAYER; mvx -= sin(theta*M_PI/180); mvz += cos(theta*M_PI/180); left = true; } break; //wire
+        case 'd': { x_distance += RATE_PLAYER; strafe = RATE_PLAYER; mvx += sin(theta*M_PI/180); mvz -= cos(theta*M_PI/180); right = true; } break; //wire
+        // case 'w': { z_distance -= RATE_PLAYER; axial  = -RATE_PLAYER; /*mvz -= axial  + sin(theta*M_PI/180); mvx -= axial  + cos(theta*M_PI/180);*/ forward = true; } break; //wire
+        // case 's': { z_distance += RATE_PLAYER; axial  = RATE_PLAYER; /*mvz += axial  + sin(theta*M_PI/180); mvx += axial  + cos(theta*M_PI/180);*/ backward = true; } break; //wire
+        // case 'a': { x_distance -= RATE_PLAYER; strafe = -RATE_PLAYER; /*mvx -= strafe + cos(theta*M_PI/180); mvz -= strafe + sin(theta*M_PI/180);*/ left = true; } break; //wire
+        // case 'd': { x_distance += RATE_PLAYER; strafe = RATE_PLAYER; /*mvx += strafe + cos(theta*M_PI/180); mvz += strafe + sin(theta*M_PI/180);*/ right = true; } break; //wire
         // Shoot
-        case ' ': { if (reload) { fire = true; darts--; } i++; } break; //fire
+        case ' ': { if (reload) { fire = true; darts--; } } break; //fire
         // Dart Selection
-        case '1': { feather = vec3(0.33, 1.0, 0.5); dart_type = 0; i++; } break; //small dart
-        case '2': { feather = vec3(1.0, 0.5, 0.25); dart_type = 1; i++; } break; //med dart
-        case '3': { feather = vec3(0.35, 0.0, 0.5); dart_type = 2; i++; } break; //large dart
+        case '1': { feather = vec3(0.33, 1.0, 0.5); dart_type = 0; } break; //small dart
+        case '2': { feather = vec3(1.0, 0.5, 0.25); dart_type = 1; } break; //med dart
+        case '3': { feather = vec3(0.35, 0.0, 0.5); dart_type = 2; } break; //large dart
         // Camera Lock
-        case '`': { free_look = !free_look; i++; } break; //fire
+        case '`': { free_look = !free_look; } break; //fire
         // Game start
-        case 'x': { glutIdleFunc(animation); i++; } break;
+        case 'x': { glutIdleFunc(animation); } break;
         // Utility
-        case 'W': { solid_part = !solid_part; i++; } break; //wire
+        case 'W': { solid_part = !solid_part; } break; //wire
         // Default
-        default: { forward = false; backward = false; i++; } break; //wire
+        default: { forward = false; backward = false; } break; //wire
 
         case 'z': zNear  *= 1.1; zFar /= 1.1; break;
         case 'Z': zNear /= 1.1; zFar *= 1.1; break;
@@ -257,14 +261,21 @@ void animation(void) {
     if (spec_buffer[i]) {
       switch (i) {
         // View Position
-        case GLUT_KEY_RIGHT: theta += dr; { if(free_look) hturn = (hturn - RATE_CAMERA_H) % 360; else if (player_look > 0) player_look--; i++; } break;
-        case GLUT_KEY_LEFT:  theta -= dr; { if(free_look) hturn = (hturn + RATE_CAMERA_H) % 360; else if (player_look < (NUM_OF_ANIMALS * NUM_EACH_ANIMAL) - 1) player_look++; i++; } break;
-        case GLUT_KEY_DOWN:  phi += dr;   { if (free_look) { vturn = (vturn - RATE_CAMERA_V) % 360; i++; } } break;
-        case GLUT_KEY_UP:    phi -= dr;   { if (free_look) { vturn = (vturn + RATE_CAMERA_V) % 360; i++; } } break;
+        case GLUT_KEY_RIGHT: theta += dr; { hturn = (hturn - RATE_CAMERA_H) % 360; } break;
+        case GLUT_KEY_LEFT:  theta -= dr; { hturn = (hturn + RATE_CAMERA_H) % 360; } break;
+        case GLUT_KEY_DOWN:  phi += dr;   { vturn = (vturn - RATE_CAMERA_V) % 360; } break;
+        case GLUT_KEY_UP:    phi -= dr;   { vturn = (vturn + RATE_CAMERA_V) % 360; } break;
       }
     }
 
   }
+
+  // mvz += sin(theta*M_PI/180);
+  // mvx += cos(theta*M_PI/180);
+
+
+  axial = 0.0;
+  strafe = 0.0;
 
   if (darts == 0) exit(EXIT_SUCCESS);
 
@@ -302,7 +313,7 @@ void animation(void) {
   }
   lasttime=time;
 
-  title_bar = "Score: " + std::to_string(score) + "                    Darts: " + std::to_string(darts);
+  title_bar = "Score: " + std::to_string(theta) + "                    Darts: " + std::to_string(darts);
 
   glutPostRedisplay();
 

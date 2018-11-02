@@ -27,9 +27,9 @@ void display(void) {
   //             1.0);
   // point4  at(mvx, 0.0, mvz, 1.0);
   // vec4    up(0.0, 1.0, 0.0, 0.0);
-  point4  eye(mvx + radius * cos(theta) * cos(phi),
-              radius * sin(phi),
-              mvz + radius * sin(theta) * cos(phi),
+  point4  eye(mvx + radius * cos(theta * M_PI/180) * cos(phi * M_PI/180),
+              radius * sin(phi * M_PI/180),
+              mvz + radius * sin(theta * M_PI/180) * cos(phi * M_PI/180),
               1.0);
   point4  at(mvx, 0.0, mvz, 1.0);
   vec4    up(0.0, 1.0, 0.0, 0.0);
@@ -38,6 +38,7 @@ void display(void) {
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
   glEnable( GL_DEPTH_TEST );
 
+  // vec4 mov = eye - at;
   // vec4 n = normalize(eye - at);
   // vec4 u = vec4(normalize(cross(up,n)),0.0);
   // vec4 v = vec4(normalize(cross(n,u)),0.0);
@@ -58,16 +59,20 @@ void display(void) {
   glUniformMatrix4fv(projection, 1, GL_TRUE, p);
 
   // PLAYER
-  object(pv, model_view, 2.0, 0.0, -5.0, BARREL_W, BARREL_H, BARREL_D, 0, 0, 0, 0, 0, 0);
-  object(pv, model_view, 1.6, -0.5, -5.75, SIGHT_W, SIGHT_H, SIGHT_D, 0, 0, 0, 0, 0, 0);
-  object(pv, model_view, 2.1, -1.1, -4.0, HANDLE_W, HANDLE_H, HANDLE_D, 0, 0, 0, 0, 0, 0);
+  // object(pv, model_view, 2.0, 0.0, -5.0, BARREL_W, BARREL_H, BARREL_D, 0, 0, 0, 0, 0, 0);
+  // object(pv, model_view, 1.6, -0.5, -5.75, SIGHT_W, SIGHT_H, SIGHT_D, 0, 0, 0, 0, 0, 0);
+  // object(pv, model_view, 2.1, -1.1, -4.0, HANDLE_W, HANDLE_H, HANDLE_D, 0, 0, 0, 0, 0, 0);
 
-  // DART
-  object(mv, model_view, 2.0, 0.0, -2.8, TIP_B, TIP_H, TIP_T, 0, 0, 0, TIP_SL, TIP_ST, 1);
-  object(mv, model_view, 2.0, 0.0, -2.4, BODY_B, BODY_H, BODY_T, 0, 0, 0, BODY_SL, BODY_ST, 1);
-  object(mv, model_view, 2.0, 0.0, -2.3, FEATHER_B, FEATHER_H, FEATHER_T, 0, 0, 0, FEATHER_SL, FEATHER_ST, 1);
+  // // DART
+  // object(mv, model_view, 2.0, 0.0, -2.8, TIP_B, TIP_H, TIP_T, 0, 0, 0, TIP_SL, TIP_ST, 1);
+  // object(mv, model_view, 2.0, 0.0, -2.4, BODY_B, BODY_H, BODY_T, 0, 0, 0, BODY_SL, BODY_ST, 1);
+  // object(mv, model_view, 2.0, 0.0, -2.3, FEATHER_B, FEATHER_H, FEATHER_T, 0, 0, 0, FEATHER_SL, FEATHER_ST, 1);
 
   // ENVIRONMENT
+  object(mv, model_view,   0.0, 0.0,  50.0, LAT_WALL_W * NUM_TILES, LAT_WALL_H, LAT_WALL_D, 0, 0, 0, 0, 0, 0);
+  object(mv, model_view, -50.0, 0.0,   0.0, LON_WALL_W, LON_WALL_H, LON_WALL_D * NUM_TILES, 0, 0, 0, 0, 0, 0);
+  object(mv, model_view,   0.0, 0.0, -50.0, LAT_WALL_W * NUM_TILES, LAT_WALL_H, LAT_WALL_D, 0, 0, 0, 0, 0, 0);
+  object(mv, model_view,  50.0, 0.0,   0.0, LON_WALL_W, LON_WALL_H, LON_WALL_D * NUM_TILES, 0, 0, 0, 0, 0, 0);
   for (i = 0; i < NUM_TILES; i++) {
     for (j = 0; j < NUM_TILES; j++) {
       object(mv, model_view, -50.0 + (i * TILE_SIZE), -2.5, -50.0 + (j * TILE_SIZE), FLOOR_W, FLOOR_H, FLOOR_D, 0, 0, 0, 0, 0, 0);
@@ -83,6 +88,9 @@ void display(void) {
   for (int i = 0; i < 3; i++) {
 
   }
+
+  // collision(everything);
+
   glFlush();
   glutSwapBuffers();
 
