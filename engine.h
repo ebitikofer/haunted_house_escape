@@ -21,6 +21,8 @@
 #define RATE_CAMERA_H	4
 #define RATE_CAMERA_V	2
 
+#define NUM_OBJECTS	20
+
 const int NumVertices = 36; // (6 faces)(2 triangles/face)(3 vertices/triangle)
 const int NumNodes = 11;
 const int NumAngles = 11;
@@ -42,8 +44,10 @@ mat4 p, mv, cv, pv;   // shader variables
 vec4 cc;
 
 // Globals to control moving around a scene.
-GLfloat mvx = -50.0;
-GLfloat mvz = 45.0;
+GLfloat mvx = 0.0;
+GLfloat mvz = 0.0;
+// GLfloat mvx = -50.0;
+// GLfloat mvz = 45.0;
 
 // Projection transformation parameters
 GLfloat fovy = 65.0;  // Field-of-view in Y direction angle (in degrees)
@@ -65,6 +69,10 @@ GLfloat roll = 0.0;
 // GLfloat strafe = 0.0;
 
 bool moving = false;
+
+bool perspective = false;
+
+bool collide[NUM_OBJECTS] = { false };
 
 // Title bar modifiers
 std::string title_bar;
@@ -166,6 +174,19 @@ void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z, GLfloa
         gluCylinder(qobj, w, d, h, sl, st); break;
     };
 
+}
+
+void collision(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d, vec3 loc[], vec3 size[]) {
+  for (int i = 0; i < NUM_OBJECTS; i++) {
+    if (x - w / 2 < loc[i].x + size[i].x / 2 &&
+        x + w / 2 > loc[i].x - size[i].x / 2 &&
+        z - d / 2 < loc[i].z + size[i].z / 2 &&
+        z + d / 2 > loc[i].z - size[i].z / 2 ) {
+      collide[i] = true;
+    } else {
+      collide[i] = false;
+    }
+  }
 }
 
 // keyboard function, keyboard callback for key down functionality

@@ -15,6 +15,10 @@
 #define COLOR_SKY     1
 //   vec3(0.8, 1.0, 1.0),
 
+#define PLAYER_W 1.0
+#define PLAYER_H 5.0
+#define PLAYER_D 1.0
+
 #define TREE_W 1.0
 #define TREE_H 5.0
 #define TREE_D 1.0
@@ -60,6 +64,13 @@
 #define HANDLE_R 0.4
 #define HANDLE_G 0.4
 #define HANDLE_B 0.4
+
+#define ROOF_W FLOOR_SIZE
+#define ROOF_H 0.1
+#define ROOF_D FLOOR_SIZE
+#define ROOF_R 0.9
+#define ROOF_G 0.2
+#define ROOF_B 0.1
 
 #define FLOOR_W TILE_SIZE
 #define FLOOR_H 0.1

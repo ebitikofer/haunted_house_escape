@@ -157,7 +157,7 @@ void animation(void) {
   // if (trans < -1.5) { trans = -1.5; transinc *= -1; }
   // lasttime=time;
 
-  title_bar = "Score: " + std::to_string(theta) + "                    Darts: " + std::to_string(darts);
+  title_bar = "Score: " + std::to_string(collide[0]) + "                    Darts: " + std::to_string(mvz);
 
   for (int i = 0; i < 256; i++) {
 
@@ -183,6 +183,8 @@ void animation(void) {
         case '3': { feather = vec3(0.35, 0.0, 0.5); dart_type = 2; } break; //large dart
         // Camera Lock
         case '`': free_look = !free_look; break; //fire
+        // Camera Change
+        case 'c': perspective = !perspective; break; //fire
         // Utility
         case 'W': { solid_part = !solid_part; } break; //wire
         case 'z': zNear *= 1.1; zFar /= 1.1; break;
