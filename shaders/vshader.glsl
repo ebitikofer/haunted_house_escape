@@ -9,5 +9,5 @@ uniform vec4 color_change;
 
 void main() {
   gl_Position = projection*camera_view*model_view*vPosition;
-  color = color_change;
+  color = vColor * color_change;
 }

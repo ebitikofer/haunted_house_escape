@@ -42,27 +42,27 @@ mat4 p, mv, cv, pv;   // shader variables
 vec4 cc;
 
 // Globals to control moving around a scene.
-GLfloat mvx = 0.0;
-GLfloat mvz = 0.0;
+GLfloat mvx = -50.0;
+GLfloat mvz = 45.0;
 
 // Projection transformation parameters
 GLfloat fovy = 65.0;  // Field-of-view in Y direction angle (in degrees)
 GLfloat zNear = 0.5;  // Near clipping plane
-GLfloat zFar = 500.0; // Far clipping plane
+GLfloat zFar = 250.0; // Far clipping plane
 GLfloat aspect;       // Viewport aspect ratio
 
 const GLfloat dr = 5.0; // 5.0 * DegreesToRadians;
 
 // Viewing transformation parameters
 GLfloat radius = 3.0;
-GLfloat theta = 0.0;
+GLfloat theta = 180.0;
 GLfloat phi = 0.0;
 GLfloat psi = 0.0;
 GLfloat pitch = 3.0;
 GLfloat yaw = 0.0;
 GLfloat roll = 0.0;
-GLfloat axial = 0.0;
-GLfloat strafe = 0.0;
+// GLfloat axial = 0.0;
+// GLfloat strafe = 0.0;
 
 bool moving = false;
 
@@ -83,16 +83,29 @@ std::mt19937 mt(ss);
 std::uniform_real_distribution<double> dist_x(-7.0, 7.0);
 std::uniform_real_distribution<double> dist_z(-10.0, -6.0);
 
+// color4 vertex_colors[8] = {
+//
+//   color4(0.0, 0.0, 0.0, 1.0),  // black
+//   color4(1.0, 0.0, 0.0, 1.0),  // red
+//   color4(1.0, 1.0, 0.0, 1.0),  // yellow
+//   color4(0.0, 1.0, 0.0, 1.0),  // green
+//   color4(0.0, 0.0, 1.0, 1.0),  // blue
+//   color4(1.0, 0.0, 1.0, 1.0),  // magenta
+//   color4(1.0, 1.0, 1.0, 1.0),  // white
+//   color4(0.0, 1.0, 1.0, 1.0)   // cyan
+//
+// };
+
 color4 vertex_colors[8] = {
 
-  color4(0.0, 0.0, 0.0, 1.0),  // black
-  color4(1.0, 0.0, 0.0, 1.0),  // red
-  color4(1.0, 1.0, 0.0, 1.0),  // yellow
-  color4(0.0, 1.0, 0.0, 1.0),  // green
-  color4(0.0, 0.0, 1.0, 1.0),  // blue
-  color4(1.0, 0.0, 1.0, 1.0),  // magenta
+  color4(0.9, 0.9, 0.9, 1.0),  // black
   color4(1.0, 1.0, 1.0, 1.0),  // white
-  color4(0.0, 1.0, 1.0, 1.0)   // cyan
+  color4(0.9, 0.9, 0.9, 1.0),  // black
+  color4(1.0, 1.0, 1.0, 1.0),  // white
+  color4(0.9, 0.9, 0.9, 1.0),  // black
+  color4(1.0, 1.0, 1.0, 1.0),  // white
+  color4(0.9, 0.9, 0.9, 1.0),  // black
+  color4(1.0, 1.0, 1.0, 1.0),  // white
 
 };
 

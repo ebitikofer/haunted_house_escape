@@ -137,6 +137,28 @@ void animation(void) {
     regen = false;
   }
 
+  if (darts == 0) exit(EXIT_SUCCESS);
+
+  // static GLint lasttime = glutGet(GLUT_ELAPSED_TIME);
+  // GLint time = glutGet(GLUT_ELAPSED_TIME);
+
+  // if (rotatep) move_angle += 20.0 / 1000.0 * (time - lasttime);
+  //
+  // doorAngle += doorAngleIncr / 1000.0 * (time - lasttime);;
+  // if (doorAngle > 60.0) doorAngleIncr *= -1.0;
+  // if (doorAngle < 0.0) {
+  //   doorAngle = 0.0;
+  //   doorAngleIncr *= -1.0;
+  // }
+  //
+  // // Do the animation code here in idle, not in display. Code for moving 2nd cube
+  // trans += transinc / 1000.0 * ( time - lasttime );
+  // if (trans > 1.5) { trans = 1.5; transinc *= -1; }
+  // if (trans < -1.5) { trans = -1.5; transinc *= -1; }
+  // lasttime=time;
+
+  title_bar = "Score: " + std::to_string(theta) + "                    Darts: " + std::to_string(darts);
+
   for (int i = 0; i < 256; i++) {
 
     if (key_buffer[i]){
@@ -149,14 +171,10 @@ void animation(void) {
           exit(EXIT_SUCCESS);
           break;
         // Walking
-        case 'w': { axial  = -RATE_PLAYER; mvz -= sin(theta*M_PI/180); mvx -= cos(theta*M_PI/180); } break; //wire
-        case 's': { axial  = RATE_PLAYER;  mvz += sin(theta*M_PI/180); mvx += cos(theta*M_PI/180); } break; //wire
-        case 'a': { strafe = -RATE_PLAYER; mvx -= sin(theta*M_PI/180); mvz += cos(theta*M_PI/180); } break; //wire
-        case 'd': { strafe = RATE_PLAYER;  mvx += sin(theta*M_PI/180); mvz -= cos(theta*M_PI/180); } break; //wire
-        /* mvz -= axial  + sin(theta*M_PI/180); mvx -= axial  + cos(theta*M_PI/180); */
-        /* mvz += axial  + sin(theta*M_PI/180); mvx += axial  + cos(theta*M_PI/180); */
-        /* mvx -= strafe + cos(theta*M_PI/180); mvz -= strafe + sin(theta*M_PI/180); */
-        /* mvx += strafe + cos(theta*M_PI/180); mvz += strafe + sin(theta*M_PI/180); */
+        case 'w': { mvz -= /*RATE_PLAYER +*/ sin(theta*M_PI/180)/2; mvx -= /*RATE_PLAYER +*/ cos(theta*M_PI/180)/2; } break; //wire
+        case 's': { mvz += /*RATE_PLAYER +*/ sin(theta*M_PI/180)/2; mvx += /*RATE_PLAYER +*/ cos(theta*M_PI/180)/2; } break; //wire
+        case 'a': { mvx -= /*RATE_PLAYER +*/ sin(theta*M_PI/180)/2; mvz += /*RATE_PLAYER +*/ cos(theta*M_PI/180)/2; } break; //wire
+        case 'd': { mvx += /*RATE_PLAYER +*/ sin(theta*M_PI/180)/2; mvz -= /*RATE_PLAYER +*/ cos(theta*M_PI/180)/2; } break; //wire
         // Shoot
         case ' ': { if (reload) { fire = true; darts--; } } break; //fire
         // Dart Selection
@@ -167,8 +185,8 @@ void animation(void) {
         case '`': free_look = !free_look; break; //fire
         // Utility
         case 'W': { solid_part = !solid_part; } break; //wire
-        case 'z': zNear  *= 1.1; zFar /= 1.1; break;
-        case 'Z': zNear  /= 1.1; zFar *= 1.1; break;
+        case 'z': zNear *= 1.1; zFar /= 1.1; break;
+        case 'Z': zNear /= 1.1; zFar *= 1.1; break;
         case 'r': radius *= 1.5; break;
         case 'R': radius /= 1.5; break;
         case 'v': fovy -= 5; if (fovy < 0) { fovy = 1; } break;
@@ -198,30 +216,6 @@ void animation(void) {
     }
 
   }
-
-  axial = 0.0; strafe = 0.0;
-
-  if (darts == 0) exit(EXIT_SUCCESS);
-
-  // static GLint lasttime = glutGet(GLUT_ELAPSED_TIME);
-  // GLint time = glutGet(GLUT_ELAPSED_TIME);
-
-  // if (rotatep) move_angle += 20.0 / 1000.0 * (time - lasttime);
-  //
-  // doorAngle += doorAngleIncr / 1000.0 * (time - lasttime);;
-  // if (doorAngle > 60.0) doorAngleIncr *= -1.0;
-  // if (doorAngle < 0.0) {
-  //   doorAngle = 0.0;
-  //   doorAngleIncr *= -1.0;
-  // }
-  //
-  // // Do the animation code here in idle, not in display. Code for moving 2nd cube
-  // trans += transinc / 1000.0 * ( time - lasttime );
-  // if (trans > 1.5) { trans = 1.5; transinc *= -1; }
-  // if (trans < -1.5) { trans = -1.5; transinc *= -1; }
-  // lasttime=time;
-
-  title_bar = "Score: " + std::to_string(theta) + "                    Darts: " + std::to_string(darts);
 
   glutPostRedisplay();
 

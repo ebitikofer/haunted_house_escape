@@ -6,6 +6,7 @@
 #define FLOOR_SIZE 100
 #define NUM_TILES  50
 #define TILE_SIZE  FLOOR_SIZE / NUM_TILES
+#define WALL_HEIGHT 20
 
 #define SKY_R 0.05
 #define SKY_G 0.0
@@ -71,18 +72,18 @@
 //   vec3(0.6, 0.6, 0.6),
 
 #define LON_WALL_W 0.5
-#define LON_WALL_H 10.0
+#define LON_WALL_H WALL_HEIGHT
 #define LON_WALL_D TILE_SIZE
 #define LON_WALL_R 0.9
-#define LON_WALL_G 0.6
-#define LON_WALL_B 0.5
+#define LON_WALL_G 0.8
+#define LON_WALL_B 0.7
 
 #define LAT_WALL_W TILE_SIZE
-#define LAT_WALL_H 10.0
+#define LAT_WALL_H WALL_HEIGHT
 #define LAT_WALL_D 0.5
 #define LAT_WALL_R 0.9
-#define LAT_WALL_G 0.6
-#define LAT_WALL_B 0.5
+#define LAT_WALL_G 0.8
+#define LAT_WALL_B 0.7
 
 #define TIP_B 0.01
 #define TIP_T 0.01
