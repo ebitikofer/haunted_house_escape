@@ -13,21 +13,16 @@ void display(void) {
 
   int i = 0, j = 0;
 
-  if (!solid_part) {
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-  } else {
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-  }
+  if (!solid_part) glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+  else glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
   glutSetWindowTitle(title_bar.c_str());
 
-  // point4  eye(mvx + radius * sin(theta) * cos(phi),
-  //             0.0, // radius * sin(theta) * sin(phi),
-  //             mvz + radius * cos(theta),
-  //             1.0);
-  // point4  at(mvx, 0.0, mvz, 1.0);
-  // vec4    up(0.0, 1.0, 0.0, 0.0);
   point4  eye(mvx + radius * cos(theta * M_PI/180) * cos(phi * M_PI/180),
+              radius * sin(phi * M_PI/180),
+              mvz + radius * sin(theta * M_PI/180) * cos(phi * M_PI/180),
+              1.0);
+  point4  gun(mvx + radius * cos(theta * M_PI/180) * cos(phi * M_PI/180),
               radius * sin(phi * M_PI/180),
               mvz + radius * sin(theta * M_PI/180) * cos(phi * M_PI/180),
               1.0);
@@ -38,30 +33,20 @@ void display(void) {
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
   glEnable( GL_DEPTH_TEST );
 
-  // vec4 mov = eye - at;
-  // vec4 n = normalize(eye - at);
-  // vec4 u = vec4(normalize(cross(up,n)),0.0);
-  // vec4 v = vec4(normalize(cross(n,u)),0.0);
-  // vec4 t = vec4(0.0, 0.0, 0.0, 1.0);
-  // mat4 c = mat4(u, v, n, t);
-  // cv = c * Translate(-eye);
-
-  // cv = Translate(-mvx, 0.0, -mvz) * RotateY(theta) * RotateX(-phi);
-  // pv = Translate(mvx, 0.0, mvz) * RotateY(theta) * RotateX(phi);
-
   cv = LookAt(eye, at, up);
-  pv = LookAt(eye, at, up);
+  pv = LookAt(gun, at, up);
   // mv = RotateZ(move_angle);
   p = Perspective(fovy, aspect, zNear, zFar);
+
 
   glUniformMatrix4fv(camera_view, 1, GL_TRUE, cv);
   // glUniformMatrix4fv(model_view, 1, GL_TRUE, mv);
   glUniformMatrix4fv(projection, 1, GL_TRUE, p);
 
   // PLAYER
-  // object(pv, model_view, 2.0, 0.0, -5.0, BARREL_W, BARREL_H, BARREL_D, 0, 0, 0, 0, 0, 0);
-  // object(pv, model_view, 1.6, -0.5, -5.75, SIGHT_W, SIGHT_H, SIGHT_D, 0, 0, 0, 0, 0, 0);
-  // object(pv, model_view, 2.1, -1.1, -4.0, HANDLE_W, HANDLE_H, HANDLE_D, 0, 0, 0, 0, 0, 0);
+  object(pv, model_view, 2.0, 0.0, -5.0, BARREL_W, BARREL_H, BARREL_D, BARREL_R, BARREL_G, BARREL_B, 0, 0, 0, 0, 0, 0);
+  object(pv, model_view, 1.6, -0.5, -5.75, SIGHT_W, SIGHT_H, SIGHT_D, SIGHT_R, SIGHT_G, SIGHT_B, 0, 0, 0, 0, 0, 0);
+  object(pv, model_view, 2.1, -1.1, -4.0, HANDLE_W, HANDLE_H, HANDLE_D, HANDLE_R, HANDLE_G, HANDLE_B, 0, 0, 0, 0, 0, 0);
 
   // // DART
   // object(mv, model_view, 2.0, 0.0, -2.8, TIP_B, TIP_H, TIP_T, 0, 0, 0, TIP_SL, TIP_ST, 1);
@@ -85,9 +70,6 @@ void display(void) {
       }
     }
   }
-  for (int i = 0; i < 3; i++) {
-
-  }
 
   // collision(everything);
 
@@ -102,7 +84,7 @@ int main(int argc, char **argv) {
   init(argc, argv);
 
   glutDisplayFunc(display);
-  glutIdleFunc(animation);
+  glutIdleFunc(animation); // Game start
   glutMenu();
 
   // RUN
@@ -111,3 +93,24 @@ int main(int argc, char **argv) {
   return(EXIT_SUCCESS);
 
 }
+
+// //----------------------------------------------------------------------------
+// int main(int argc, char **argv)
+// {
+//
+//   glutInit(&argc, argv);
+//   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+//   glutInitWindowSize(512, 512);
+//   glutCreateWindow("Sphere");
+//
+//   glewInit();
+//
+//   init();
+//
+//   glutDisplayFunc(display);
+//   glutReshapeFunc(reshape);
+//   glutKeyboardFunc(keyboard);
+//   glutIdleFunc(idle);
+//   glutMainLoop();
+//   return(EXIT_SUCCESS);
+// }

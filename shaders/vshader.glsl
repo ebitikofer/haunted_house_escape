@@ -7,8 +7,7 @@ uniform mat4 camera_view;
 uniform mat4 projection;
 uniform vec4 color_change;
 
-void main()
-{
+void main() {
   gl_Position = projection*camera_view*model_view*vPosition;
-  color = color_change*vColor;
+  color = color_change;
 }

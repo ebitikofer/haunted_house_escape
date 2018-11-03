@@ -19,24 +19,8 @@
 #define DRAW_ROCKS	5
 #define DRAW_ANIMAL 6
 
-// Which entity will the mouse control (see list above), initally the
-// Head2 angle.
+// Which entity will the mouse control (see list above), initally the Head2 angle.
 // GLint angle = Head2;
-
-// Viewing transformation parameters
-GLfloat radius = 3.0;
-GLfloat theta = 0.0;
-GLfloat phi = 0.0;
-GLfloat pitch = 3.0;
-GLfloat yaw = 0.0;
-GLfloat roll = 0.0;
-
-
-const GLfloat dr = 5.0; // 5.0 * DegreesToRadians;
-
-bool moving = false;
-GLfloat axial = 0.0;
-GLfloat strafe = 0.0;
 
 // Rotation of first cube
 bool rotatep;                  // whether to rotate or not
@@ -61,7 +45,6 @@ vec3 feather = vec3(FEATHER_RE, FEATHER_GR, FEATHER_BL);
 
 // Position and rotation modifiers and helpers
 float dart_x = 0.0, dart_z = 0.0, animal_x = 0.0;
-int x_len = 0, y_len = 0;
 
 // Proc gen and animal selection helpers
 int player_look = 1;
@@ -70,12 +53,8 @@ bool free_look = true, fire = false, reload = true, regen = false;
 // Game editing bools
 bool solid_part = true;
 
-// Movement
-int hturn = 0, vturn = 0;
-bool forward = false, backward = false, left = false, right = false;
-
 // Gameplay mechanisms
-float elevation = 0.0, z_distance = 0.0, x_distance = 0.0, frame = 3.0;
+float elevation = 0.0, frame = 3.0;
 int darts = 10, dart_type = 0, score = 0;
 bool game_over = false;
 
@@ -90,48 +69,32 @@ void animation(void) {
       if (frame == 0.0) frame = 1.0;
       if (frame == 314) step++;
       if (frame < 314) frame = frame + 1.0;
-
       animal_x = 7.0 * sin(frame/100);
 
     } else if (step == 1 || step == 3) {
 
       if (frame == 0.0) step++;
       if (frame > 0) frame = frame - 1.0;
-
       animal_x = 7.0 * -sin(frame/100);
 
     }
 
-    if (fire)
-      dart_z -= 0.1; // RATE_GUN;
-    else
-      dart_z = 0.0;
+    if (fire) dart_z -= 0.1; // RATE_GUN;
+    else dart_z = 0.0;
 
   }
 
-  if (step == 4)
-    step = 0;
+  if (step == 4) step = 0;
 
   if (dart_z < animal[player_look].z) {
     //dart_z = 0.0;
     if (dart_type == animal_det[player_look].x) {
-      animal_health[player_look] = vec3(0.5, 0.5, 0.5);
-      score++;
+      animal_health[player_look] = vec3(0.5, 0.5, 0.5); score++;
     } else if (dart_type > animal_det[player_look].x) {
-      animal_health[player_look] = vec3(0.0, 0.0, 0.0);
-      score--;
+      animal_health[player_look] = vec3(0.0, 0.0, 0.0); score--;
     } else if (dart_type < animal_det[player_look].x) {
-      animal_health[player_look] = vec3(2.0, 2.0, 2.0);
-      score--;
+      animal_health[player_look] = vec3(2.0, 2.0, 2.0); score--;
     }
-  }
-
-  float mult = 1.0;
-
-  switch (player_look / NUM_EACH_ANIMAL) {
-    case 0: mult = 2.0; break;
-    case 1: mult = 1.5; break;
-    case 2: mult = 0.75; break;
   }
 
   if (free_look) {
@@ -144,9 +107,9 @@ void animation(void) {
 
   } else {
 
-    x_len = player.x - animal[player_look].x - animal_x * mult;
-    y_len = player.z - animal[player_look].z;
-    hturn = (atan(x_len/(y_len + 0.01)) * 180 / M_PI);
+    // x_len = player.x - animal[player_look].x - animal_x * mult;
+    // y_len = player.z - animal[player_look].z;
+    // hturn = (atan(x_len/(y_len + 0.01)) * 180 / M_PI);
     if (fire){
       reload = false;
       dart_x = animal[player_look].x + animal_x;
@@ -156,11 +119,6 @@ void animation(void) {
     }
 
   }
-
-  // if (z_distance >= DRAW_DISTANCE) { z_distance = -DRAW_DISTANCE; regen = true; }
-  // if (z_distance < -DRAW_DISTANCE) { z_distance =  DRAW_DISTANCE; regen = true; }
-  // if (x_distance >= DRAW_DISTANCE) { x_distance = -DRAW_DISTANCE; regen = true; }
-  // if (x_distance < -DRAW_DISTANCE) { x_distance =  DRAW_DISTANCE; regen = true; }
 
   // if (mvz >= DRAW_DISTANCE) { mvz = -DRAW_DISTANCE; regen = true; }
   // if (mvz < -DRAW_DISTANCE) { mvz =  DRAW_DISTANCE; regen = true; }
@@ -179,9 +137,6 @@ void animation(void) {
     regen = false;
   }
 
-  // if (forward) distance -= 0.1678;
-  // if (backward) distance += 0.1678;
-
   for (int i = 0; i < 256; i++) {
 
     if (key_buffer[i]){
@@ -194,14 +149,14 @@ void animation(void) {
           exit(EXIT_SUCCESS);
           break;
         // Walking
-        case 'w': { z_distance -= RATE_PLAYER; axial  = -RATE_PLAYER; mvz -= sin(theta*M_PI/180); mvx -= cos(theta*M_PI/180); forward = true; } break; //wire
-        case 's': { z_distance += RATE_PLAYER; axial  = RATE_PLAYER; mvz += sin(theta*M_PI/180); mvx += cos(theta*M_PI/180); backward = true; } break; //wire
-        case 'a': { x_distance -= RATE_PLAYER; strafe = -RATE_PLAYER; mvx -= sin(theta*M_PI/180); mvz += cos(theta*M_PI/180); left = true; } break; //wire
-        case 'd': { x_distance += RATE_PLAYER; strafe = RATE_PLAYER; mvx += sin(theta*M_PI/180); mvz -= cos(theta*M_PI/180); right = true; } break; //wire
-        // case 'w': { z_distance -= RATE_PLAYER; axial  = -RATE_PLAYER; /*mvz -= axial  + sin(theta*M_PI/180); mvx -= axial  + cos(theta*M_PI/180);*/ forward = true; } break; //wire
-        // case 's': { z_distance += RATE_PLAYER; axial  = RATE_PLAYER; /*mvz += axial  + sin(theta*M_PI/180); mvx += axial  + cos(theta*M_PI/180);*/ backward = true; } break; //wire
-        // case 'a': { x_distance -= RATE_PLAYER; strafe = -RATE_PLAYER; /*mvx -= strafe + cos(theta*M_PI/180); mvz -= strafe + sin(theta*M_PI/180);*/ left = true; } break; //wire
-        // case 'd': { x_distance += RATE_PLAYER; strafe = RATE_PLAYER; /*mvx += strafe + cos(theta*M_PI/180); mvz += strafe + sin(theta*M_PI/180);*/ right = true; } break; //wire
+        case 'w': { axial  = -RATE_PLAYER; mvz -= sin(theta*M_PI/180); mvx -= cos(theta*M_PI/180); } break; //wire
+        case 's': { axial  = RATE_PLAYER;  mvz += sin(theta*M_PI/180); mvx += cos(theta*M_PI/180); } break; //wire
+        case 'a': { strafe = -RATE_PLAYER; mvx -= sin(theta*M_PI/180); mvz += cos(theta*M_PI/180); } break; //wire
+        case 'd': { strafe = RATE_PLAYER;  mvx += sin(theta*M_PI/180); mvz -= cos(theta*M_PI/180); } break; //wire
+        /* mvz -= axial  + sin(theta*M_PI/180); mvx -= axial  + cos(theta*M_PI/180); */
+        /* mvz += axial  + sin(theta*M_PI/180); mvx += axial  + cos(theta*M_PI/180); */
+        /* mvx -= strafe + cos(theta*M_PI/180); mvz -= strafe + sin(theta*M_PI/180); */
+        /* mvx += strafe + cos(theta*M_PI/180); mvz += strafe + sin(theta*M_PI/180); */
         // Shoot
         case ' ': { if (reload) { fire = true; darts--; } } break; //fire
         // Dart Selection
@@ -209,109 +164,62 @@ void animation(void) {
         case '2': { feather = vec3(1.0, 0.5, 0.25); dart_type = 1; } break; //med dart
         case '3': { feather = vec3(0.35, 0.0, 0.5); dart_type = 2; } break; //large dart
         // Camera Lock
-        case '`': { free_look = !free_look; } break; //fire
-        // Game start
-        case 'x': { glutIdleFunc(animation); } break;
+        case '`': free_look = !free_look; break; //fire
         // Utility
         case 'W': { solid_part = !solid_part; } break; //wire
-        // Default
-        default: { forward = false; backward = false; } break; //wire
-
         case 'z': zNear  *= 1.1; zFar /= 1.1; break;
-        case 'Z': zNear /= 1.1; zFar *= 1.1; break;
+        case 'Z': zNear  /= 1.1; zFar *= 1.1; break;
         case 'r': radius *= 1.5; break;
         case 'R': radius /= 1.5; break;
-        case 'o': theta += dr; break;
-        case 'O': theta -= dr; break;
-        case 'p': phi += dr; break;
-        case 'P': phi -= dr; break;
-        case 'v':
-          fovy-=5;
-          if (fovy < 0) {
-            // Min angle of view 1 degree
-            fovy = 1;
-          }
-          break;
-        case 'V': fovy+=5; break;
-          if (fovy > 179) {
-            // Max angle of view 179 degrees
-            fovy = 179;
-          }
-          break;
-
-        case '~':  // reset values to their defaults
-          rotatep=!rotatep;
-          //    zNear = 0.1;
-          //    zFar = 300.0;
-          zNear = 0.5;
-          zFar = 3.0;
-
+        case 'v': fovy -= 5; if (fovy < 0) { fovy = 1; } break;
+        case 'V': fovy += 5; /* break; */ if (fovy > 179) { fovy = 179; } break;
+        case '~':  // reset
+          rotatep =! rotatep;
+          zNear = 0.1; zFar = 300.0;
           radius = 3.0;
-          theta  = 0.0;
-          phi    = 0.0;
+          theta = 0.0; phi = 0.0;
           break;
+        default: { } break; // Default
+
       }
     } else {
       switch (i) {
-        // Unshoot
-        case ' ': { fire = false; } break; //fire
+        case ' ': fire = false; break; // Stop firing, not the same as bullet landing
       }
     }
 
     if (spec_buffer[i]) {
       switch (i) {
-        // View Position
-        case GLUT_KEY_RIGHT: theta += dr; { hturn = (hturn - RATE_CAMERA_H) % 360; } break;
-        case GLUT_KEY_LEFT:  theta -= dr; { hturn = (hturn + RATE_CAMERA_H) % 360; } break;
-        case GLUT_KEY_DOWN:  phi += dr;   { vturn = (vturn - RATE_CAMERA_V) % 360; } break;
-        case GLUT_KEY_UP:    phi -= dr;   { vturn = (vturn + RATE_CAMERA_V) % 360; } break;
+        case GLUT_KEY_RIGHT: theta += dr; break; // Look angle right
+        case GLUT_KEY_LEFT:  theta -= dr; break; // Look angle left
+        case GLUT_KEY_DOWN:  phi += dr;   break; // Look angle down
+        case GLUT_KEY_UP:    phi -= dr;   break; // Look angle up
       }
     }
 
   }
 
-  // mvz += sin(theta*M_PI/180);
-  // mvx += cos(theta*M_PI/180);
-
-
-  axial = 0.0;
-  strafe = 0.0;
+  axial = 0.0; strafe = 0.0;
 
   if (darts == 0) exit(EXIT_SUCCESS);
 
-  // Perspective view of a color cube using LookAt() and Perspective()
-  // Separated the transform for the camera (camera_view) from the object (model_view).
+  // static GLint lasttime = glutGet(GLUT_ELAPSED_TIME);
+  // GLint time = glutGet(GLUT_ELAPSED_TIME);
 
-  // Added code to account for glutElapsedTime
-  static GLint lasttime = glutGet(GLUT_ELAPSED_TIME);
-  GLint time = glutGet(GLUT_ELAPSED_TIME);
-
-  // Code to animate cube goes here.
-  if (rotatep) {
-    move_angle += 20.0 / 1000.0 * (time - lasttime);
-  }
-
-  doorAngle += doorAngleIncr / 1000.0 * (time - lasttime);;
-  if (doorAngle > 60.0) {
-    doorAngleIncr *= -1.0;
-  }
-  if (doorAngle < 0.0){
-    doorAngle = 0.0;
-    doorAngleIncr *= -1.0;
-  }
-
-  // Do the animation code here in idle, not in display.
-  //  Code for moving 2nd cube
-  trans += transinc / 1000.0 * ( time - lasttime );
-  if (trans > 1.5) {
-    trans = 1.5;
-    transinc *= -1;
-  }
-  if (trans < -1.5) {
-    trans = -1.5;
-    transinc *= -1;
-  }
-  lasttime=time;
+  // if (rotatep) move_angle += 20.0 / 1000.0 * (time - lasttime);
+  //
+  // doorAngle += doorAngleIncr / 1000.0 * (time - lasttime);;
+  // if (doorAngle > 60.0) doorAngleIncr *= -1.0;
+  // if (doorAngle < 0.0) {
+  //   doorAngle = 0.0;
+  //   doorAngleIncr *= -1.0;
+  // }
+  //
+  // // Do the animation code here in idle, not in display. Code for moving 2nd cube
+  // trans += transinc / 1000.0 * ( time - lasttime );
+  // if (trans > 1.5) { trans = 1.5; transinc *= -1; }
+  // if (trans < -1.5) { trans = -1.5; transinc *= -1; }
+  // lasttime=time;
 
   title_bar = "Score: " + std::to_string(theta) + "                    Darts: " + std::to_string(darts);
 
@@ -323,7 +231,7 @@ void animation(void) {
 void menu_select(int mode) {
 
   switch (mode) {
-    case 1: glutIdleFunc(animation); break;
+    case 1: ; break;
     case 2: glutIdleFunc(NULL); break;
     case 3: /* solid_part = !solid_part; */ glutPostRedisplay(); break;
     case 4: exit(EXIT_SUCCESS);

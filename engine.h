@@ -8,8 +8,10 @@
 // Screen dimensions
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
+
 // Drawing
 #define DRAW_DISTANCE 20.0
+
 // Trig
 #ifndef M_PI
 #define M_PI 3.141592654
@@ -29,14 +31,14 @@ typedef Angel::vec4 color4;
 point4 points[NumVertices];
 color4 colors[NumVertices];
 
-GLUquadricObj *qobj; // For drawing cylinders
+GLUquadricObj *qobj;  // For drawing cylinders
 
-GLuint camera_view; // camera-view matrix uniform shader variable location
-GLuint model_view;  // model-view matrix uniform shader variable location
-GLuint projection;  // projection matrix uniform shader variable location
+GLuint camera_view;   // camera-view matrix uniform shader variable location
+GLuint model_view;    // model-view matrix uniform shader variable location
+GLuint projection;    // projection matrix uniform shader variable location
 GLuint color_change;  // projection matrix uniform shader variable location
 
-mat4 p, mv, cv, pv; // shader variables
+mat4 p, mv, cv, pv;   // shader variables
 vec4 cc;
 
 // Globals to control moving around a scene.
@@ -44,15 +46,30 @@ GLfloat mvx = 0.0;
 GLfloat mvz = 0.0;
 
 // Projection transformation parameters
-GLfloat fovy = 65.0;    // Field-of-view in Y direction angle (in degrees)
-GLfloat zNear = 0.5;     // Near clipping plane
-GLfloat zFar = 500.0;   // Far clipping plane
-GLfloat aspect;         // Viewport aspect ratio
+GLfloat fovy = 65.0;  // Field-of-view in Y direction angle (in degrees)
+GLfloat zNear = 0.5;  // Near clipping plane
+GLfloat zFar = 500.0; // Far clipping plane
+GLfloat aspect;       // Viewport aspect ratio
+
+const GLfloat dr = 5.0; // 5.0 * DegreesToRadians;
+
+// Viewing transformation parameters
+GLfloat radius = 3.0;
+GLfloat theta = 0.0;
+GLfloat phi = 0.0;
+GLfloat psi = 0.0;
+GLfloat pitch = 3.0;
+GLfloat yaw = 0.0;
+GLfloat roll = 0.0;
+GLfloat axial = 0.0;
+GLfloat strafe = 0.0;
+
+bool moving = false;
 
 // Title bar modifiers
 std::string title_bar;
 
-int Index = 0; // Global to keep track of what vertex we are setting.
+int Index = 0;        // Global to keep track of what vertex we are setting.
 
 bool key_buffer[256] = { false };
 bool spec_buffer[256] = { false };
@@ -76,32 +93,6 @@ color4 vertex_colors[8] = {
   color4(1.0, 0.0, 1.0, 1.0),  // magenta
   color4(1.0, 1.0, 1.0, 1.0),  // white
   color4(0.0, 1.0, 1.0, 1.0)   // cyan
-
-};
-
-color4 old_colors[8] = {
-
-  color4(0.0, 0.0, 0.0, 1.0),  // black
-  color4(1.0, 0.0, 0.0, 1.0),  // red
-  color4(1.0, 1.0, 0.0, 1.0),  // yellow
-  color4(0.0, 1.0, 0.0, 1.0),  // green
-  color4(0.0, 0.0, 1.0, 1.0),  // blue
-  color4(1.0, 0.0, 1.0, 1.0),  // magenta
-  color4(1.0, 1.0, 1.0, 1.0),  // white
-  color4(0.0, 1.0, 1.0, 1.0)   // cyan
-
-};
-
-color4 new_colors[8] = {
-
-  color4(0.5, 0.3, 0.1, 1.0),  // brown
-  color4(0.5, 0.3, 0.1, 1.0),  // brown
-  color4(0.5, 0.3, 0.1, 1.0),  // brown
-  color4(0.5, 0.3, 0.1, 1.0),  // brown
-  color4(0.5, 0.3, 0.1, 1.0),  // brown
-  color4(0.5, 0.3, 0.1, 1.0),  // brown
-  color4(0.5, 0.3, 0.1, 1.0),  // brown
-  color4(0.5, 0.3, 0.1, 1.0),  // brown
 
 };
 
@@ -191,6 +182,20 @@ void reshape(int width, int height) {
   aspect = GLfloat(width)/height;
 
 }
+
+
+// //----------------------------------------------------------------------------
+// extern "C" void reshape(int width, int height)
+// {
+//   glViewport(0, 0, width, height);
+//
+//   aspect = GLfloat(width)/height;
+//
+//   mat4 projection = Perspective(fovy, aspect, 0.1, 100.0);
+//   glUniformMatrix4fv(Projection, 1, GL_TRUE, projection);
+// }
+//
+
 
 // init function, initializes the drawables and GL_DEPTH_TEST
 void init(int argc, char **argv) {

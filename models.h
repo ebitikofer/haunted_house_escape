@@ -3,18 +3,6 @@
 
 #include <Angel.h>
 
-// Colors array
-#define COLOR_SKY     1
-#define COLOR_TREES   2
-#define COLOR_ROCKS   3
-#define COLOR_FLOORS  4
-#define COLOR_BARREL  5
-#define COLOR_SIGHT   6
-#define COLOR_HANDLE  7
-#define COLOR_TIP     8
-#define COLOR_BODY    9
-#define COLOR_FEATHER 10
-
 #define FLOOR_SIZE 100
 #define NUM_TILES  50
 #define TILE_SIZE  FLOOR_SIZE / NUM_TILES
@@ -22,6 +10,9 @@
 #define SKY_R 0.05
 #define SKY_G 0.0
 #define SKY_B 0.1
+
+#define COLOR_SKY     1
+//   vec3(0.8, 1.0, 1.0),
 
 #define TREE_W 1.0
 #define TREE_H 5.0
@@ -40,9 +31,9 @@
 #define ANIMAL_W 1.0
 #define ANIMAL_H 1.0
 #define ANIMAL_D 1.0
-#define ANIMAL_R 0.0
-#define ANIMAL_G 0.0
-#define ANIMAL_B 0.0
+#define ANIMAL_R 1.0
+#define ANIMAL_G 1.0
+#define ANIMAL_B 1.0
 // vec3 animal_col[NUM_OF_ANIMALS] = { vec3(1.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0), vec3(0.0, 0.0, 1.0) };
 
 #define BARREL_W 0.75
@@ -51,6 +42,9 @@
 #define BARREL_R 0.6
 #define BARREL_G 0.6
 #define BARREL_B 0.6
+
+#define COLOR_BARREL  5
+//   vec3(0.9, 0.6, 0.5),
 
 #define SIGHT_W 0.25
 #define SIGHT_H 0.25
@@ -72,6 +66,9 @@
 #define FLOOR_R 0.9
 #define FLOOR_G 0.6
 #define FLOOR_B 0.5
+
+#define COLOR_FLOORS  4
+//   vec3(0.6, 0.6, 0.6),
 
 #define LON_WALL_W 0.5
 #define LON_WALL_H 10.0
@@ -110,22 +107,8 @@
 #define FEATHER_H 0.3
 #define FEATHER_SL 16
 #define FEATHER_ST 10
-#define FEATHER_RE 1.0
+#define FEATHER_RE 0.0
 #define FEATHER_GR 0.0
-#define FEATHER_BL 1.0
-
-// Color array for game objects
-// vec3 colors[ COLOR_FEATHER ] = {
-//   vec3(0.8, 1.0, 1.0),
-//   vec3(0.5, 0.3, 0.1),
-//   vec3(0.5, 0.4, 0.3),
-//   vec3(0.6, 0.6, 0.6),
-//   vec3(0.9, 0.6, 0.5),
-//   vec3(0.5, 0.5, 0.5),
-//   vec3(0.4, 0.4, 0.4),
-//   vec3(0.5, 0.5, 0.5),
-//   vec3(1.0, 1.0, 1.0),
-//   vec3(0.0, 0.0, 0.0)
-// };
+#define FEATHER_BL 0.0
 
 #endif
