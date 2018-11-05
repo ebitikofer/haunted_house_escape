@@ -239,7 +239,7 @@ void bookcase() {
 }
 
 void book() {
-  object(mv, model_view, bookcase_loc[0].x + 0.5, bookcase_loc[0].y, bookcase_loc[0].z, bookcase_size[0].x/2, bookcase_size[0].y/5, 0.5, 1.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
+  object(mv, model_view, bookcase_loc[0].x + 1.5, bookcase_loc[0].y, bookcase_loc[0].z, bookcase_size[0].x/2, bookcase_size[0].y/5, 0.5, 1.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
 }
 
 void key() {
