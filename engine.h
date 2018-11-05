@@ -21,7 +21,10 @@
 #define RATE_CAMERA_H	4
 #define RATE_CAMERA_V	2
 
-#define NUM_OBJECTS	20
+#define NUM_OBJECTS	21
+#define NUM_BOOKCASE	10
+#define NUM_ENEMIES	4
+#define NUM_TABLES	4
 
 const int NumVertices = 36; // (6 faces)(2 triangles/face)(3 vertices/triangle)
 const int NumNodes = 11;
@@ -44,9 +47,9 @@ mat4 p, mv, cv, pv;   // shader variables
 vec4 cc;
 
 // Globals to control moving around a scene.
-GLfloat mvx = 0.0;
-GLfloat mvz = 0.0;
-// GLfloat mvx = -50.0;
+GLfloat mvx = -37.5; // Start in furthest room
+GLfloat mvz = 30.0;
+// GLfloat mvx = -50.0; // Start at door
 // GLfloat mvz = 45.0;
 
 // Projection transformation parameters
@@ -58,21 +61,26 @@ GLfloat aspect;       // Viewport aspect ratio
 const GLfloat dr = 5.0; // 5.0 * DegreesToRadians;
 
 // Viewing transformation parameters
-GLfloat radius = 3.0;
-GLfloat theta = 180.0;
+GLfloat radius = 1.0;
+GLfloat theta = 90.0;
 GLfloat phi = 0.0;
 GLfloat psi = 0.0;
 GLfloat pitch = 3.0;
 GLfloat yaw = 0.0;
 GLfloat roll = 0.0;
-// GLfloat axial = 0.0;
-// GLfloat strafe = 0.0;
 
 bool moving = false;
 
 bool perspective = false;
 
 bool collide[NUM_OBJECTS] = { false };
+
+bool die[NUM_ENEMIES] = { false };
+
+GLfloat l = 0.0;
+GLfloat r = 0.0;
+GLfloat f = 0.0;
+GLfloat b = 0.0;
 
 // Title bar modifiers
 std::string title_bar;
@@ -83,6 +91,8 @@ bool key_buffer[256] = { false };
 bool spec_buffer[256] = { false };
 
 bool display_bool = false;
+
+bool death = false;
 
 // Random
 uint64_t seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -163,12 +173,16 @@ void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z, GLfloa
       Translate( x, y, z )
       * RotateX(pitch) * RotateY(yaw) * RotateZ(roll)
     );
-    glUniform4fv( color_change, 1, vec4(r, g, b, 1.0) );
+
+    if (death)
+      glUniform4fv( color_change, 1, vec4(1.0, 0.0, 0.0, 1.0) );
+    else
+      glUniform4fv( color_change, 1, vec4(r, g, b, 1.0) );
+
     switch (type) {
       case 0:
         glUniformMatrix4fv( uniform, 1, GL_TRUE, matrix * instance * Scale( w, h, d ) );
-        glDrawArrays( GL_TRIANGLES, 0, NumVertices );
-        break;
+        glDrawArrays( GL_TRIANGLES, 0, NumVertices ); break;
       case 1:
         glUniformMatrix4fv( uniform, 1, GL_TRUE, matrix * instance );
         gluCylinder(qobj, w, d, h, sl, st); break;
@@ -176,15 +190,23 @@ void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z, GLfloa
 
 }
 
-void collision(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d, vec3 loc[], vec3 size[]) {
-  for (int i = 0; i < NUM_OBJECTS; i++) {
-    if (x - w / 2 < loc[i].x + size[i].x / 2 &&
-        x + w / 2 > loc[i].x - size[i].x / 2 &&
-        z - d / 2 < loc[i].z + size[i].z / 2 &&
-        z + d / 2 > loc[i].z - size[i].z / 2 ) {
-      collide[i] = true;
+void collision(GLfloat *x, GLfloat y, GLfloat *z, GLfloat w, GLfloat h, GLfloat d, vec3 loc[], vec3 size[], bool result[], int num) {
+  for (int i = 0; i < num; i++) {
+    if (*x - w / 2 < loc[i].x + size[i].x / 2 &&
+        *x + w / 2 > loc[i].x - size[i].x / 2 &&
+        *z - d / 2 < loc[i].z + size[i].z / 2 &&
+        *z + d / 2 > loc[i].z - size[i].z / 2 ) {
+      result[i] = true;
+      l = (loc[i].x + size[i].x / 2) - (*x - w / 2);
+      r = (*x + w / 2) - (loc[i].x - size[i].x / 2);
+      f = (loc[i].z + size[i].z / 2) - (*z - d / 2);
+      b = (*z + d / 2) - (loc[i].z - size[i].z / 2);
+      if (l < f && l < b && l < r) { *x += l; }
+      else if (r < f && r < b && r < l) { *x -= r; }
+      else if (f < b && f < l && f < r) { *z += f; }
+      else if (b < f && b < l && b < r) { *z -= b; }
     } else {
-      collide[i] = false;
+      result[i] = false;
     }
   }
 }

@@ -48,7 +48,7 @@ float dart_x = 0.0, dart_z = 0.0, animal_x = 0.0;
 
 // Proc gen and animal selection helpers
 int player_look = 1;
-bool free_look = true, fire = false, reload = true, regen = false;
+bool free_look = true, fire_gun = false, reload = true, regen = false;
 
 // Game editing bools
 bool solid_part = true;
@@ -58,28 +58,256 @@ float elevation = 0.0, frame = 3.0;
 int darts = 10, dart_type = 0, score = 0;
 bool game_over = false;
 
+GLfloat door_height = 27.5;
+bool shut_door = false;
+
+GLfloat wall_height = 5.0;
+
+vec3 door_loc[2] = {
+  vec3(-37.5, 0.0, 0.0),
+  vec3(-25.0, 0.0, -42.5)
+};
+GLfloat door_vert = 2.5;
+GLfloat door_rot[2] = { 0, -90 };
+
+GLfloat ghost_height[5] = { 0.0 };
+vec3 ghost_loc = {
+  vec3(-17.5, ghost_height[0], -5.0)
+};
+bool chase_ghost = false;
+
+GLfloat zombie_height[6] = { 0.0 };
+vec3 zombie_loc[3] = {
+  vec3(10.0, zombie_height[0], 25.0),
+  vec3(10.0, zombie_height[0], 35.0),
+  vec3(15.0, zombie_height[0], 32.5)
+};
+bool chase_zombie[3] = { false };
+
+bool draw_table = false;
+
+GLfloat bookcase_z = { -45.0 };
+GLfloat bookcase_x[2] = { 20.0, 30.0 };
+bool bookcase_open = false;
+
+bool displayed[10] = { false };
+
+void open_door(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d) {
+    if (x - w / 2 < -25.0 &&
+        x + w / 2 > -50.0 &&
+        z - d / 2 < 40.0 &&
+        z + d / 2 > 0.0 ) {
+      if (!displayed[0]) {
+        std::cout << "ROOM 1" << std::endl;
+        displayed[0] = true;
+      }
+      // chase_ghost = true;
+//       door_rot[0] = 0;
+//       door_rot[1] = 90;
+//       door_loc[0] = vec3(0.0, 0.0, 0.0);
+//       door_loc[1] = vec3(0.0, 0.0, 0.0);
+//     } else {
+//       chase_ghost = false;
+    }
+  }
+
+void werewolf_chase(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d) {
+    if (x - w / 2 < -25.0 &&
+        x + w / 2 > -50.0 &&
+        z - d / 2 < 0.0 &&
+        z + d / 2 > -50.0 ) {
+      if (!displayed[1]) {
+        std::cout << "ROOM 2" << std::endl;
+        displayed[1] = true;
+      }
+//       chase_ghost = true;
+//       door_rot[0] = 0;
+//       door_rot[1] = 90;
+//       door_loc[0] = vec3(0.0, 0.0, 0.0);
+//       door_loc[1] = vec3(0.0, 0.0, 0.0);
+//     } else {
+//       chase_ghost = false;
+    }
+  }
+
+void ghost_chase(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d) {
+  if (x - w / 2 < 0.0 &&
+      x + w / 2 > -25.0 &&
+      z - d / 2 < 0.0 &&
+      z + d / 2 > -50.0 ) {
+    if (!displayed[2]) {
+      std::cout << "ROOM 3" << std::endl;
+      displayed[2] = true;
+    }
+    chase_ghost = true;
+    // door_rot[0] = 0;
+    // door_rot[1] = 90;
+    // door_loc[0] = vec3(0.0, 0.0, 0.0);
+    // door_loc[1] = vec3(0.0, 0.0, 0.0);
+  } else {
+    chase_ghost = false;
+  }
+}
+
+void picture_fix(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d) {
+  if (x - w / 2 < 25.0 &&
+      x + w / 2 > 0.0 &&
+      z - d / 2 < 0.0 &&
+      z + d / 2 > -25.0 ) {
+    if (!displayed[3]) {
+      std::cout << "ROOM 4" << std::endl;
+      displayed[3] = true;
+    }
+      // chase_ghost = true;
+//       door_rot[0] = 0;
+//       door_rot[1] = 90;
+//       door_loc[0] = vec3(0.0, 0.0, 0.0);
+//       door_loc[1] = vec3(0.0, 0.0, 0.0);
+//     } else {
+      // chase_ghost = false;
+    }
+  }
+
+void open_bookcase(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d) {
+  if (x - w / 2 < 25.0 &&
+      x + w / 2 > 0.0 &&
+      z - d / 2 < -25.0 &&
+      z + d / 2 > -50.0 ) {
+    if (!displayed[4]) {
+      std::cout << "ROOM 5" << std::endl;
+      displayed[4] = true;
+    }
+    bookcase_open = true;
+//     door_rot[0] = 0;
+//     door_rot[1] = 90;
+//     door_loc[0] = vec3(0.0, 0.0, 0.0);
+//     door_loc[1] = vec3(0.0, 0.0, 0.0);
+  } else {
+    bookcase_open = false;
+  }
+}
+
+void door_unlock(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d) {
+  if (x - w / 2 < 50.0 &&
+      x + w / 2 > 25.0 &&
+      z - d / 2 < -25.0 &&
+      z + d / 2 > -50.0 ) {
+    if (!displayed[5]) {
+      std::cout << "ROOM 6" << std::endl;
+      displayed[5] = true;
+    }
+//       chase_ghost = true;
+//       door_rot[0] = 0;
+//       door_rot[1] = 90;
+//       door_loc[0] = vec3(0.0, 0.0, 0.0);
+//       door_loc[1] = vec3(0.0, 0.0, 0.0);
+//     } else {
+//       chase_ghost = false;
+    }
+  }
+
+void escape_agency(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d) {
+  if (x - w / 2 < 50.0 &&
+      x + w / 2 > 25.0 &&
+      z - d / 2 < 25.0 &&
+      z + d / 2 > -25.0 ) {
+    if (!displayed[6]) {
+      std::cout << "ROOM 7" << std::endl;
+      displayed[6] = true;
+    }
+//       chase_ghost = true;
+//       door_rot[0] = 0;
+//       door_rot[1] = 90;
+//       door_loc[0] = vec3(0.0, 0.0, 0.0);
+//       door_loc[1] = vec3(0.0, 0.0, 0.0);
+//     } else {
+//       chase_ghost = false;
+    }
+  }
+
+void zombie_chase(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d, bool *chase) {
+  if (x - w / 2 < 25.0 &&
+      x + w / 2 > -25.0 &&
+      z - d / 2 < 40.0 &&
+      z + d / 2 > 0.0 ) {
+    if (!displayed[7]) {
+      std::cout << "ROOM 8" << std::endl;
+      displayed[7] = true;
+    }
+    *chase = true;
+//     door_rot[0] = 0;
+//     door_rot[1] = 90;
+//     door_loc[0] = vec3(0.0, 0.0, 0.0);
+//     door_loc[1] = vec3(0.0, 0.0, 0.0);
+  } else {
+    *chase = false;
+  }
+}
+
+void confront_agency(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d) {
+  if (x - w / 2 < 50.0 &&
+      x + w / 2 > 25.0 &&
+      z - d / 2 < 40.0 &&
+      z + d / 2 > 25.0 ) {
+    if (!displayed[8]) {
+      std::cout << "ROOM 9" << std::endl;
+      displayed[8] = true;
+    }
+//       chase_ghost = true;
+//       door_rot[0] = 0;
+//       door_rot[1] = 90;
+//       door_loc[0] = vec3(0.0, 0.0, 0.0);
+//       door_loc[1] = vec3(0.0, 0.0, 0.0);
+//     } else {
+//       chase_ghost = false;
+    }
+  }
+
+void door_shut(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d) {
+  if (x - w / 2 < 50.0 &&
+      x + w / 2 > -50.0 &&
+      z - d / 2 < 50.0 &&
+      z + d / 2 > 40.0 ) {
+    if (!displayed[9]) {
+      std::cout << "ROOM 10" << std::endl;
+      displayed[9] = true;
+    }
+    shut_door = true;
+//     door_rot[0] = 0;
+//     door_rot[1] = 90;
+//     door_loc[0] = vec3(0.0, 0.0, 0.0);
+//     door_loc[1] = vec3(0.0, 0.0, 0.0);
+  } else {
+    shut_door = false;
+  }
+}
+
 // animation function, runs the updating of the variables
 void animation(void) {
 
   static int step;
 
-  if (frame >= 0.0 && frame <= 314.0) {
+  if (frame >= 0.0 && frame <= 360.0) {
     if (step == 0 || step == 2) {
 
       if (frame == 0.0) frame = 1.0;
-      if (frame == 314) step++;
-      if (frame < 314) frame = frame + 1.0;
-      animal_x = 7.0 * sin(frame/100);
+      if (frame == 360) step++;
+      if (frame < 360) frame = frame + 1.0;
+      for (int i = 0; i < 5; i++){
+        ghost_height[i] = sin((frame - i)*M_PI/30);
+      }
 
     } else if (step == 1 || step == 3) {
 
       if (frame == 0.0) step++;
       if (frame > 0) frame = frame - 1.0;
-      animal_x = 7.0 * -sin(frame/100);
+      for (int i = 0; i < 5; i++){
+        ghost_height[i] = -sin((frame - i)*M_PI/30);
+      }
 
     }
 
-    if (fire) dart_z -= 0.1; // RATE_GUN;
+    if (fire_gun) dart_z -= 0.1; // RATE_GUN;
     else dart_z = 0.0;
 
   }
@@ -99,7 +327,7 @@ void animation(void) {
 
   if (free_look) {
 
-    if (fire) reload = false;
+    if (fire_gun) reload = false;
     else {
       reload = true;
       dart_x = 0.0;
@@ -110,7 +338,7 @@ void animation(void) {
     // x_len = player.x - animal[player_look].x - animal_x * mult;
     // y_len = player.z - animal[player_look].z;
     // hturn = (atan(x_len/(y_len + 0.01)) * 180 / M_PI);
-    if (fire){
+    if (fire_gun){
       reload = false;
       dart_x = animal[player_look].x + animal_x;
     } else {
@@ -157,7 +385,82 @@ void animation(void) {
   // if (trans < -1.5) { trans = -1.5; transinc *= -1; }
   // lasttime=time;
 
-  title_bar = "Score: " + std::to_string(collide[0]) + "                    Darts: " + std::to_string(mvz);
+  open_door(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
+  werewolf_chase(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
+  ghost_chase(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
+  picture_fix(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
+  open_bookcase(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
+  door_unlock(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
+  escape_agency(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
+  for (int i = 0; i < 3; i++) {
+    zombie_chase(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, &chase_zombie[i]);
+  }
+  confront_agency(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
+  door_shut(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
+
+
+
+  if (door_height > wall_height) {
+    if (shut_door) { door_height -= 0.075; }
+  }
+
+  if (bookcase_z < -37.5) {
+    if (bookcase_open) { bookcase_z += 0.075; }
+  }
+
+  if (bookcase_x[0] > 15.0) {
+    if (bookcase_open) { bookcase_x[0] -= 0.075; }
+  }
+
+  if (bookcase_x[1] < 35.0) {
+    if (bookcase_open) { bookcase_x[1] += 0.075; }
+  }
+
+  if (chase_ghost) {
+    if (ghost_loc.x != mvx) {
+      if (ghost_loc.x - mvx < 0) {
+        ghost_loc.x += 0.1;
+      }
+      if (ghost_loc.x - mvx > 0) {
+        ghost_loc.x -= 0.1;
+      }
+    }
+    if (ghost_loc.z != mvz) {
+      if (ghost_loc.z - mvz < 0) {
+        ghost_loc.z += 0.1;
+      }
+      if (ghost_loc.z - mvz > 0) {
+        ghost_loc.z -= 0.1;
+      }
+    }
+  }
+
+  for (int i = 0; i < 3; i++) {
+    if (chase_zombie[i]) {
+      if (zombie_loc[i].x != mvx) {
+        if (zombie_loc[i].x - mvx < 0) {
+          zombie_loc[i].x += 0.1;
+        }
+        if (zombie_loc[i].x - mvx > 0) {
+          zombie_loc[i].x -= 0.1;
+        }
+      }
+      if (zombie_loc[i].z != mvz) {
+        if (zombie_loc[i].z - mvz < 0) {
+          zombie_loc[i].z += 0.1;
+        }
+        if (zombie_loc[i].z - mvz > 0) {
+          zombie_loc[i].z -= 0.1;
+        }
+      }
+    }
+  }
+
+  for (int i = 0; i < NUM_ENEMIES; i++) {
+    if (die[i]) death = true;// exit(EXIT_FAILURE);
+  }
+
+  title_bar = "Score: " + std::to_string(mvx) + "                    Darts: " + std::to_string(mvz); // + " l:" + std::to_string(l) + " r:" + std::to_string(r) + " f:" + std::to_string(f) + " b:" + std::to_string(b);
 
   for (int i = 0; i < 256; i++) {
 
@@ -176,7 +479,7 @@ void animation(void) {
         case 'a': { mvx -= /*RATE_PLAYER +*/ sin(theta*M_PI/180)/2; mvz += /*RATE_PLAYER +*/ cos(theta*M_PI/180)/2; } break; //wire
         case 'd': { mvx += /*RATE_PLAYER +*/ sin(theta*M_PI/180)/2; mvz -= /*RATE_PLAYER +*/ cos(theta*M_PI/180)/2; } break; //wire
         // Shoot
-        case ' ': { if (reload) { fire = true; darts--; } } break; //fire
+        case ' ': { if (reload) { fire_gun = true; darts--; } } break; //fire
         // Dart Selection
         case '1': { feather = vec3(0.33, 1.0, 0.5); dart_type = 0; } break; //small dart
         case '2': { feather = vec3(1.0, 0.5, 0.25); dart_type = 1; } break; //med dart
@@ -204,7 +507,7 @@ void animation(void) {
       }
     } else {
       switch (i) {
-        case ' ': fire = false; break; // Stop firing, not the same as bullet landing
+        case ' ': fire_gun = false; break; // Stop firing, not the same as bullet landing
       }
     }
 
