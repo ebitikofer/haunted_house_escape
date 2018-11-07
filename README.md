@@ -24,21 +24,23 @@ CAMERA CONTROLS:
 
 TODO:
 
-  HARD:
+   HARD:
 - [ ] lighting for every object?
 - [ ] light effects on player
 - [ ] player representation
 - [ ] hallucinations
 - [ ] 2D overlay
 - [ ] start screen
-  EASY:
+
+   EASY:
 - [ ] proper windows
 - [ ] light switch and fire
 - [ ] agency movement
 - [ ] pickups and functionality
 - [ ] using objects in proximity
 - [ ] ending
-  TEDIOUS:
+
+   TEDIOUS:
 - [ ] more lights
 - [ ] enemy collision with walls
 - [ ] ...everything else
