@@ -33,7 +33,6 @@ TODO:
 - [ ] start screen
 
    EASY:
-- [ ] proper windows
 - [ ] light switch and fire
 - [ ] agency movement
 - [ ] pickups and functionality
@@ -41,6 +40,8 @@ TODO:
 - [ ] ending
 
    TEDIOUS:
+- [ ] proper windows
 - [ ] more lights
 - [ ] enemy collision with walls
+- [ ] clean shiz up
 - [ ] ...everything else
