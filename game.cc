@@ -85,6 +85,14 @@ void display(void) {
 
   set_objects(); // Set objects for render
 
+  // Move fourth sphere to where light2 is positioned, and make it an
+  // emissive object.
+  // glUniform4fv(Material_Emiss, 1, light2_diffuse);
+  // glUniformMatrix4fv(model_view, 1, GL_TRUE, mv*Translate(-37.5, 0.0, 20.0));
+  // glUniform1f( enable, 1.0 );
+  // glDrawArrays(GL_TRIANGLES, NumVertices, NumVertices2);
+  // glUniform4fv(Material_Emiss, 1, emissive_off);
+
   // Environment
   floor();
   walls();
@@ -192,12 +200,19 @@ void tables() {
   }
 }
 
-void moon() { ;
-  // object(mv, model_view, -50.0,  door_height,  45.0, LON_WALL_W, LON_WALL_H, LON_WALL_D * NUM_TILES - 90.0, LON_WALL_R, LON_WALL_G, LON_WALL_B, 0, 0, 0, 0, 0, 0);
+void moon() {
+  object(mv, model_view, -75.0,  40.0, -65.0, MOON_W, MOON_H, MOON_D, MOON_R, MOON_G, MOON_B, 0, 0, 0, 6, 6, 2);
 }
 
-void werewolf() { ;
-  // object(mv, model_view, -50.0,  door_height,  45.0, LON_WALL_W, LON_WALL_H, LON_WALL_D * NUM_TILES - 90.0, LON_WALL_R, LON_WALL_G, LON_WALL_B, 0, 0, 0, 0, 0, 0);
+void werewolf() {
+  for (int i = 1; i < 4; i++) {
+    object(mv, model_view, enemy_loc[i].x + 0.0, zombie_height[0] + 0.5, enemy_loc[i].z + 0.0, ZOMBIE_W*.75, ZOMBIE_H*.75, ZOMBIE_D*.75, ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 45, 0, 45, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, enemy_loc[i].x + 0.0, zombie_height[1] + 0.0, enemy_loc[i].z + 0.0, ZOMBIE_W*1, ZOMBIE_H*1, ZOMBIE_D*1, ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, enemy_loc[i].x + 1.0, zombie_height[2] + 0.0, enemy_loc[i].z + 0.0, ZOMBIE_W/2, ZOMBIE_H, ZOMBIE_D/2, ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, enemy_loc[i].x - 1.0, zombie_height[3] + 0.0, enemy_loc[i].z + 0.0, ZOMBIE_W/2, ZOMBIE_H, ZOMBIE_D/2, ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, enemy_loc[i].x + 0.5, zombie_height[4] - 1.0, enemy_loc[i].z + 0.0, ZOMBIE_W/2, ZOMBIE_H, ZOMBIE_D/2, ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, enemy_loc[i].x - 0.5, zombie_height[5] - 1.0, enemy_loc[i].z + 0.0, ZOMBIE_W/2, ZOMBIE_H, ZOMBIE_D/2, ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  }
 }
 
 void vaccuum() {
@@ -255,9 +270,21 @@ void fire() { ;
   // object(mv, model_view, -50.0,  door_height,  45.0, LON_WALL_W, LON_WALL_H, LON_WALL_D * NUM_TILES - 90.0, LON_WALL_R, LON_WALL_G, LON_WALL_B, 0, 0, 0, 0, 0, 0);
 }
 
-void agency() { ;
-  // object(mv, model_view, -50.0,  door_height,  45.0, LON_WALL_W, LON_WALL_H, LON_WALL_D * NUM_TILES - 90.0, LON_WALL_R, LON_WALL_G, LON_WALL_B, 0, 0, 0, 0, 0, 0);
-}
+void agency() {
+  object(mv, model_view, agency_loc.x + 0.0, agency_loc.y + 1.15, agency_loc.z + 0.0, HAIR_W, HAIR_H, HAIR_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, agency_loc.x + 0.0, agency_loc.y + 0.75, agency_loc.z + 0.0, FACE_W, FACE_H, FACE_D, SKIN_R, SKIN_G, SKIN_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, agency_loc.x + 0.3, agency_loc.y + 0.75, agency_loc.z - 0.175, LENS_W, LENS_H, LENS_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, agency_loc.x + 0.3, agency_loc.y + 0.75, agency_loc.z + 0.175, LENS_W, LENS_H, LENS_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, agency_loc.x + 0.4, agency_loc.y + 0.875, agency_loc.z + 0.0, BRIDGE_W, BRIDGE_H, BRIDGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, agency_loc.x + 0.0, agency_loc.y - 0.25, agency_loc.z + 0.0, SHIRT_W, SHIRT_H, SHIRT_D, SHIRT_R, SHIRT_G, SHIRT_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, agency_loc.x + 0.0, agency_loc.y - 0.25, agency_loc.z - 0.375, SUIT_W, SUIT_H, SUIT_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, agency_loc.x + 0.0, agency_loc.y - 0.25, agency_loc.z + 0.375, SUIT_W, SUIT_H, SUIT_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, agency_loc.x + 0.25, agency_loc.y - 0.125, agency_loc.z + 0.0, TIE_W, TIE_H, TIE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, agency_loc.x + 0.0, agency_loc.y - 0.375, agency_loc.z - 0.5, APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, agency_loc.x + 0.0, agency_loc.y - 0.375, agency_loc.z + 0.5, APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, agency_loc.x + 0.0, agency_loc.y - 1.5, agency_loc.z - 0.25, APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, agency_loc.x + 0.0, agency_loc.y - 1.5, agency_loc.z + 0.25, APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+ }
 
 void gun() {
   object(pv, model_view, table_loc[2].x + 0.0*0.2, table_loc[2].y + 0.0*0.2, table_loc[2].z + -1.0*0.2, BARREL_W*0.2, BARREL_H*0.2, BARREL_D*0.2, BARREL_R, BARREL_G, BARREL_B, 0, 0, 90, 0, 0, 0);

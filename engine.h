@@ -30,11 +30,19 @@ const int NumVertices = 36; // (6 faces)(2 triangles/face)(3 vertices/triangle)
 const int NumNodes = 11;
 const int NumAngles = 11;
 
+const int NumTimesToSubdivide = 5;
+const int NumTriangles        = 4096;  // (4 faces)^(NumTimesToSubdivide + 1)
+const int NumVertices2        = 3 * NumTriangles;
+
+
 typedef Angel::vec4 point4;
 typedef Angel::vec4 color4;
 
 point4 points[NumVertices];
 color4 colors[NumVertices];
+
+point4 points2[NumVertices2];
+vec4   normals[NumVertices2];
 
 GLUquadricObj *qobj;  // For drawing cylinders
 
@@ -42,6 +50,7 @@ GLuint camera_view;   // camera-view matrix uniform shader variable location
 GLuint model_view;    // model-view matrix uniform shader variable location
 GLuint projection;    // projection matrix uniform shader variable location
 GLuint color_change;  // projection matrix uniform shader variable location
+GLuint enable;  // projection matrix uniform shader variable location
 
 mat4 p, mv, cv, pv;   // shader variables
 vec4 cc;
@@ -100,6 +109,59 @@ std::seed_seq ss{ uint32_t( seed & 0xffffffff ), uint32_t( seed >> 32 ) };
 std::mt19937 mt(ss);
 std::uniform_real_distribution<double> dist_x(-7.0, 7.0);
 std::uniform_real_distribution<double> dist_z(-10.0, -6.0);
+
+// Position of light1
+point4 light_position(-65.0,  30.0, -55.0, 1.0);
+// If you want a non-positional light use 0.0 for fourth value
+//point4 light_position(0.0, 0.0, 1.0, 0.0);
+
+// Initialize first light lighting parameters
+color4 light_ambient(0.2, 0.2, 0.2, 1.0);
+color4 light_diffuse(0.5, 0.5, 0.5, 1.0);
+color4 light_specular(0.6, 0.6, 0.6, 1.0);
+
+// Position of light2 (it will change, so needs to be global).
+point4 light2_position(12.5, 12.5, -12.5, 0.0);
+GLuint Light2_Pos; // uniform location
+
+// Initialize second light lighting parameters
+color4 light2_ambient(0.2, 0.0, 0.2, 1.0);
+color4 light2_diffuse(0.7, 0.3, 0.7, 1.0);
+color4 light2_specular(0.6, 0.0, 0.6, 1.0);
+
+// Material Properties for spheres
+color4 material_ambient(1.0, 0.0, 1.0, 1.0);
+color4 material_diffuse(1.0, 0.8, 0.0, 1.0);
+color4 material_specular(1.0, 0.0, 1.0, 1.0);
+float  material_shininess = 500.0;
+
+// Next variables used to move light2.
+GLfloat light_theta=0.0;  // the angle of light2
+GLfloat light_incr= 0.001;// the amount to move light2 in radians/millisecond
+bool rotate=false;        // are we animating light2?
+
+GLuint Light1;     // uniform location to turn light on or off
+GLuint Light2;     // uniform location to turn light on or off
+
+bool light1=true;  // Is light1 on?
+bool light2=true;  // Is light2 on?
+
+// Next two variables are to set whether an object has an emissive
+// term in the light equation (does it glow?, and what color?).
+// Default emissive color:
+color4 emissive(0.7, 0.0, 0.7, 1.0);
+// Default emissive color if not emissive object:
+color4 emissive_off(0.0, 0.0, 0.0, 1.0);
+
+GLuint Material_Emiss; // uniform location of emissive property of surface
+
+color4 ambient_product = light_ambient * material_ambient;
+color4 diffuse_product = light_diffuse * material_diffuse;
+color4 specular_product = light_specular * material_specular;
+
+color4 ambient2_product = light2_ambient * material_ambient;
+color4 diffuse2_product = light2_diffuse * material_diffuse;
+color4 specular2_product = light2_specular * material_specular;
 
 // color4 vertex_colors[8] = {
 //
@@ -166,6 +228,63 @@ void cube() {
 
 }
 
+void triangle(const point4& a, const point4& b, const point4& c)
+{
+  normals[Index] = a;  normals[Index].w=0.0;  points2[Index] = a;  Index++;
+  normals[Index] = b;  normals[Index].w=0.0;  points2[Index] = b;  Index++;
+  normals[Index] = c;  normals[Index].w=0.0;  points2[Index] = c;  Index++;
+}
+
+
+point4 unit(const point4& p)
+{
+  float len = p.x*p.x + p.y*p.y + p.z*p.z;
+
+  point4 t;
+  if (len > DivideByZeroTolerance) {
+    t = p / sqrt(len);
+    t.w = 1.0;
+  }
+
+  return t;
+}
+
+void divide_triangle(const point4& a, const point4& b,
+		     const point4& c, int count)
+{
+  if (count > 0) {
+    point4 v1 = unit(a + b);
+    point4 v2 = unit(a + c);
+    point4 v3 = unit(b + c);
+    divide_triangle( a, v1, v2, count - 1);
+    divide_triangle( c, v2, v3, count - 1);
+    divide_triangle( b, v3, v1, count - 1);
+    divide_triangle(v1, v3, v2, count - 1);
+  }
+  else {
+    triangle(a, b, c);
+  }
+}
+
+
+void tetrahedron(int count)
+{
+
+  Index = 0;
+
+  point4 v[4] = {
+    vec4(0.0, 0.0, 1.0, 1.0),
+    vec4(0.0, 0.942809, -0.333333, 1.0),
+    vec4(-0.816497, -0.471405, -0.333333, 1.0),
+    vec4(0.816497, -0.471405, -0.333333, 1.0)
+  };
+
+  divide_triangle(v[0], v[1], v[2], count);
+  divide_triangle(v[3], v[2], v[1], count);
+  divide_triangle(v[0], v[3], v[1], count);
+  divide_triangle(v[0], v[2], v[3], count);
+}
+
 //
 void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d, GLfloat r, GLfloat g, GLfloat b, int pitch, int yaw, int roll, int sl, int st, int type) {
 
@@ -181,11 +300,25 @@ void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z, GLfloa
 
     switch (type) {
       case 0:
+        // glShadeModel(GL_SMOOTH);
+        // glUniform4fv(Material_Emiss, 1, light_diffuse);
+        // glUniform4fv(Material_Emiss, 1, light2_diffuse);
         glUniformMatrix4fv( uniform, 1, GL_TRUE, matrix * instance * Scale( w, h, d ) );
+        glUniform1f( enable, 0.0 );
         glDrawArrays( GL_TRIANGLES, 0, NumVertices ); break;
+        // glUniform4fv(Material_Emiss, 1, emissive_off); break;
       case 1:
         glUniformMatrix4fv( uniform, 1, GL_TRUE, matrix * instance );
+        glUniform1f( enable, 2.0 );
         gluCylinder(qobj, w, d, h, sl, st); break;
+      case 2:
+        // glShadeModel(GL_FLAT);
+        glUniform4fv(Material_Emiss, 1, light2_diffuse);
+        glUniformMatrix4fv( uniform, 1, GL_TRUE, matrix * instance * Scale( w, h, d ) );
+        glUniform1f( enable, 1.0 );
+        glDrawArrays( GL_TRIANGLES, NumVertices, NumVertices2 );
+        glUniform4fv(Material_Emiss, 1, emissive_off); break;
+
     };
 
 }
@@ -277,6 +410,8 @@ void init(int argc, char **argv) {
 
   cube();
 
+  tetrahedron(NumTimesToSubdivide);
+
   // Drawables(solid_part);
 
   // for (k = 0; k < NUM_OF_ANIMALS; k++) {
@@ -297,9 +432,11 @@ void init(int argc, char **argv) {
   GLuint buffer;
   glGenBuffers(1, &buffer);
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(points) + sizeof(colors), NULL, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(points) + sizeof(points2) + sizeof(colors) + sizeof(normals), NULL, GL_STATIC_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
-  glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(colors), colors);
+  glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(points2), points2);
+  glBufferSubData(GL_ARRAY_BUFFER, sizeof(points2), sizeof(colors), colors);
+  // glBufferSubData(GL_ARRAY_BUFFER, sizeof(colors), sizeof(normals), normals);
 
   // Load shaders and use the resulting shader program
   GLuint program = InitShader("shaders/vshader.glsl", "shaders/fshader.glsl");
@@ -312,12 +449,42 @@ void init(int argc, char **argv) {
 
   GLuint vColor = glGetAttribLocation(program, "vColor");
   glEnableVertexAttribArray(vColor);
-  glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(points)));
+  glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(points2)));
+
+  GLuint vNormal = glGetAttribLocation(program, "vNormal");
+  glEnableVertexAttribArray(vNormal);
+  glVertexAttribPointer(vNormal, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(normals)));
 
   model_view = glGetUniformLocation(program, "model_view");
   camera_view = glGetUniformLocation(program, "camera_view");
   projection = glGetUniformLocation(program, "projection");
   color_change = glGetUniformLocation(program, "color_change");
+  enable = glGetUniformLocation(program, "enable");
+
+  glUniform4fv(glGetUniformLocation(program, "AmbientProduct"), 1, ambient_product);
+  glUniform4fv(glGetUniformLocation(program, "DiffuseProduct"), 1, diffuse_product);
+  glUniform4fv(glGetUniformLocation(program, "SpecularProduct"), 1, specular_product);
+
+  glUniform4fv(glGetUniformLocation(program, "LightPosition"), 1, light_position);
+
+  glUniform4fv(glGetUniformLocation(program, "AmbientProduct2"), 1, ambient2_product);
+  glUniform4fv(glGetUniformLocation(program, "DiffuseProduct2"), 1, diffuse2_product);
+  glUniform4fv(glGetUniformLocation(program, "SpecularProduct2"), 1, specular2_product);
+
+  Light2_Pos = glGetUniformLocation(program, "LightPosition2");
+  glUniform4fv(Light2_Pos, 1, light2_position);
+
+  glUniform1f(glGetUniformLocation(program, "Shininess"), material_shininess);
+
+  // If surface glows, it should have an emissive term in the material property.
+  Material_Emiss = glGetUniformLocation(program, "emissive");
+  glUniform4fv(Material_Emiss, 1, emissive_off);
+
+  Light1 = glGetUniformLocation(program, "light1");
+  glUniform1i(Light1,light1);
+
+  Light2 = glGetUniformLocation(program, "light2");
+  glUniform1i(Light2,light2);
 
   glEnable(GL_DEPTH_TEST);
   glClearColor(1.0, 1.0, 1.0, 1.0);

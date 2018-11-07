@@ -90,6 +90,8 @@ GLfloat bookcase_z = { -45.0 };
 GLfloat bookcase_x[2] = { 20.0, 30.0 };
 bool bookcase_open = false;
 
+vec3 agency_loc = vec3(-51.0, 0.0, 10.0);
+
 bool displayed[10] = { false };
 
 void open_door(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d) {

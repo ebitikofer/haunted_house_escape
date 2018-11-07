@@ -67,6 +67,13 @@
 #define DOORKNOB_G 0.7
 #define DOORKNOB_B 0.0
 
+#define MOON_W 10.0
+#define MOON_H 10.0
+#define MOON_D 10.0
+#define MOON_R 0.9
+#define MOON_G 0.9
+#define MOON_B 1.0
+
 #define TOP_W 2.5
 #define TOP_H 0.1
 #define TOP_D 5.0
@@ -140,6 +147,16 @@
 #define PICTURE_G 0.7
 #define PICTURE_B 0.0
 
+#define SWITCH_W 2.0
+#define SWITCH_H 2.0
+#define SWITCH_D 2.0
+#define BASE_W 2.0
+#define BASE_H 2.0
+#define BASE_D 2.0
+// #define LIGHT_R 0.9
+// #define LIGHT_G 0.9
+// #define LIGHT_B 1.0
+
 #define BOOKCASELZ_W 5.0
 #define BOOKCASELZ_H 15.0
 #define BOOKCASELZ_D 25.0
@@ -165,6 +182,53 @@
 #define KEY_R 0.9
 #define KEY_G 0.7
 #define KEY_B 0.0
+
+#define FIRE_W 1.0
+#define FIRE_H 1.0
+#define FIRE_D 1.0
+#define LOG_W 1.0
+#define LOG_H 1.0
+#define LOG_D 2.0
+#define LOG_R 0.9
+#define LOG_G 0.7
+#define LOG_B 0.0
+#define FIRE_R 0.9
+#define FIRE_G 0.7
+#define FIRE_B 0.0
+
+#define HAIR_W 0.76
+#define HAIR_H 0.15
+#define HAIR_D 0.76
+#define FACE_W 0.75
+#define FACE_H 0.75
+#define FACE_D 0.75
+#define LENS_W 0.25
+#define LENS_H 0.25
+#define LENS_D 0.25
+#define BRIDGE_W 0.06125
+#define BRIDGE_H 0.06125
+#define BRIDGE_D 0.5
+#define SHIRT_W 0.5
+#define SHIRT_H 1.25
+#define SHIRT_D 0.5
+#define SUIT_W 0.5
+#define SUIT_H 1.25
+#define SUIT_D 0.25
+#define TIE_W 0.25
+#define TIE_H 1.0
+#define TIE_D 0.25
+#define APPENDAGE_W 0.25
+#define APPENDAGE_H 1.5
+#define APPENDAGE_D 0.25
+#define SKIN_R 0.8
+#define SKIN_G 0.8
+#define SKIN_B 0.6
+#define SHIRT_R 1.0
+#define SHIRT_G 1.0
+#define SHIRT_B 1.0
+#define AGENCY_R 0.0
+#define AGENCY_G 0.0
+#define AGENCY_B 0.0
 
 #define ZOMBIE_W 2.0
 #define ZOMBIE_H 2.0
