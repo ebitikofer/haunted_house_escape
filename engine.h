@@ -115,6 +115,8 @@ GLfloat r = 0.0;
 GLfloat f = 0.0;
 GLfloat b = 0.0;
 
+float red = 0.0, green = 0.5, blue = 1.0, color_a_pink = 0.0;
+
 // Title bar modifiers
 std::string title_bar;
 
@@ -136,7 +138,8 @@ std::uniform_real_distribution<double> dist_z(-10.0, -6.0);
 std::uniform_real_distribution<double> sickness(0.0, 0.005);
 std::uniform_real_distribution<double> morpher1(0.0, 0.5);
 std::uniform_real_distribution<double> morpher2(0.0, 0.5);
-std::uniform_real_distribution<double> morpher3(0.0, 0.5);
+std::uniform_real_distribution<double> morpher3(
+);
 // Position of light1
 point4 light_position(-65.0,  30.0, -55.0, 1.0);
 // If you want a non-positional light use 0.0 for fourth value
@@ -319,12 +322,16 @@ void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z, GLfloa
     dp2 = light2_diffuse * vec4(1.0, 0.0, 0.0, 1.0);
     sp2 = light2_specular * vec4(1.0, 0.0, 0.0, 1.0);
   } else if (hallucinate) {
-    ap = light_ambient * vec4(morpher1(mt), morpher2(mt), morpher3(mt), 1.0);
-    dp = light_diffuse * vec4(morpher1(mt), morpher2(mt), morpher3(mt), 1.0);
-    sp = light_specular * vec4(morpher1(mt), morpher2(mt), morpher3(mt), 1.0);
-    ap2 = light2_ambient * vec4(morpher1(mt), morpher2(mt), morpher3(mt), 1.0);
-    dp2 = light2_diffuse * vec4(morpher1(mt), morpher2(mt), morpher3(mt), 1.0);
-    sp2 = light2_specular * vec4(morpher1(mt), morpher2(mt), morpher3(mt), 1.0);
+    color_a_pink += 0.001;
+    red = sin(color_a_pink*M_PI/180/2);
+    green = sin(90 + 1.5 * color_a_pink*M_PI/180/2);
+    blue = sin(180 + 2.0 * color_a_pink*M_PI/180/2);
+    ap = light_ambient * vec4(red * 0.6, green * 0.6, blue * 0.6, 1.0);
+    dp = light_diffuse * vec4(red * 0.5, green * 0.5, blue * 0.5, 1.0);
+    sp = light_specular * vec4(red * 0.4, green * 0.4, blue * 0.4, 1.0);
+    ap = light2_ambient * vec4(-red * 0.4, -green * 0.5, -blue * 0.6, 1.0);
+    dp = light2_diffuse * vec4(-blue * 0.5, -red * 0.6, -green * 0.4, 1.0);
+    sp = light2_specular * vec4(-green * 0.6, -blue * 0.4, -red * 0.5, 1.0);
   } else {
     ap = light_ambient * vec4(r, g, b, 1.0);
     dp = light_diffuse * vec4(r, g, b, 1.0);

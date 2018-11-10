@@ -117,6 +117,8 @@ void animation(void) {
 
   static int step;
 
+  set_room(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
+
   if (rooms[0]) {
     if (doors[0]){
       if (action) {
@@ -184,13 +186,15 @@ void animation(void) {
   } else { }
 
   if (rooms[6]) {
-    agency_loc = vec3(45.0, 0.0, 20.0);
+    if (!agency_chase) {
+      agency_loc = vec3(45.0, 0.0, 15.0);
+    }
     hallucinate = true;
     agency_chase = true;
     dizziness = sickness(mt);
     nausea += 0.001 + dizziness;
-    phi = 45 * -sin(nausea *180/M_PI);
-    theta = -90 + 45 * cos((nausea *180/M_PI)/2);
+    phi = 25 * -sin(nausea *180/M_PI);
+    theta = -90 + 25 * cos((nausea *180/M_PI)/2);
     if (doors[5]){
       if (action) {
         open_door[5] = true;
@@ -305,8 +309,6 @@ void animation(void) {
   // if (trans > 1.5) { trans = 1.5; transinc *= -1; }
   // if (trans < -1.5) { trans = -1.5; transinc *= -1; }
   // lasttime=time;
-
-  set_room(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
 
   if (darts == 0) exit(EXIT_SUCCESS);
 
@@ -447,7 +449,7 @@ void animation(void) {
         case 'd': { mvx += speed_boost * sin(theta*M_PI/180)/2; mvz -= speed_boost * cos(theta*M_PI/180)/2; } break;
         case 'f': { action = true; } break; // Action
         case ' ': { if (reload) { fire_gun = true; darts--; } } break; // Shoot
-        case '1': { } break; // Weapon 1
+        case '1': { hallucinate = !hallucinate; } break; // Weapon 1
         case '2': { } break; // Weapon 2
         case '3': { } break; // Weapon 3
         case 'c': perspective = !perspective; break; //fire

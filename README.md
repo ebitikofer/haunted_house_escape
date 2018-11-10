@@ -29,7 +29,7 @@ TODO:
 - [ ] light object if theres time
 - [ ] material for every object?
 - [ ] ~~light effects on player~~
-- [ ] fake it ;)
+- [ ] ^^ fake it ;) ^^
 - [ ] player representation
 - [x] hallucinations
 - [ ] 2D overlay
