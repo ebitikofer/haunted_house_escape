@@ -63,7 +63,7 @@ void main() {
     if(dot(L2, N) < 0.0) {
       specular2 = vec4(0.0, 0.0, 0.0, 0.0);
     }
-
+    
     gl_FragColor = emissive * color;
     if ((emissive.r == 0.0) && (emissive.g == 0.0) && (emissive.b == 0.0)) {
       if (light1) {
@@ -74,7 +74,7 @@ void main() {
       }
     }
     gl_FragColor.a = 1.0;
-  // } else {
+  //} else {
   //  gl_FragColor = color;
-  // }
+  //}
 }

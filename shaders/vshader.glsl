@@ -31,9 +31,9 @@ void main() {
   fL2 = (camera_view*LightPosition2).xyz;
 
   gl_Position = projection*mv*vPosition;
-  // if (enable == 1.0) {
+   if (enable == 1.0) {
     color = color_change;
-  // } else {
-  //   color = vColor * color_change;
-  // }
+   } else {
+    color = vColor * color_change;
+   }
 }

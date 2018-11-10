@@ -25,7 +25,9 @@ CAMERA CONTROLS:
 TODO:
 
    HARD:
-- [ ] lighting for every object?
+- [x] lighting?
+- [ ] light object if theres time
+- [ ] material for every object?
 - [ ] light effects on player
 - [ ] player representation
 - [ ] hallucinations
@@ -34,13 +36,17 @@ TODO:
 
    EASY:
 - [ ] light switch and fire
-- [ ] agency movement
-- [ ] pickups and functionality
-- [ ] using objects in proximity
+- [x] door rotation
+- [ ] door collision
+- [x] agency movement
+- [x] pickups
+- [x] fake pickup functionality
+- [x] using objects in proximity
+- [ ] set all actions
 - [ ] ending
 
    TEDIOUS:
-- [ ] proper windows
+- [x] proper windows
 - [ ] more lights
 - [ ] enemy collision with walls
 - [ ] clean shiz up

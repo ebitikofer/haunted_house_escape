@@ -21,10 +21,20 @@
 #define RATE_CAMERA_H	4
 #define RATE_CAMERA_V	2
 
-#define NUM_OBJECTS	21
+#define NUM_OBJECTS	38
+#define NUM_DOORS	8
 #define NUM_BOOKCASE	10
 #define NUM_ENEMIES	4
+#define NUM_GHOSTS	1
+#define NUM_ZOMBIES	3
+#define NUM_WEREWOLVES	4
+#define NUM_AGENCIES	3
 #define NUM_TABLES	4
+#define NUM_INTERACTABLES	4
+#define NUM_PICKUPS	4
+#define NUM_ROOMS 10
+
+enum cardinal{ north, south, east, west };
 
 const int NumVertices = 36; // (6 faces)(2 triangles/face)(3 vertices/triangle)
 const int NumNodes = 11;
@@ -51,6 +61,12 @@ GLuint model_view;    // model-view matrix uniform shader variable location
 GLuint projection;    // projection matrix uniform shader variable location
 GLuint color_change;  // projection matrix uniform shader variable location
 GLuint enable;  // projection matrix uniform shader variable location
+GLuint ambient_product;
+GLuint diffuse_product;
+GLuint specular_product;
+GLuint ambient_product2;
+GLuint diffuse_product2;
+GLuint specular_product2;
 
 mat4 p, mv, cv, pv;   // shader variables
 vec4 cc;
@@ -84,7 +100,13 @@ bool perspective = false;
 
 bool collide[NUM_OBJECTS] = { false };
 
-bool die[NUM_ENEMIES] = { false };
+bool proximal[NUM_INTERACTABLES] = { false };
+
+bool pickup[NUM_PICKUPS] = { false };
+
+bool g_die[NUM_GHOSTS] = { false };
+
+bool z_die[NUM_ZOMBIES] = { false };
 
 GLfloat l = 0.0;
 GLfloat r = 0.0;
@@ -125,43 +147,39 @@ point4 light2_position(12.5, 12.5, -12.5, 0.0);
 GLuint Light2_Pos; // uniform location
 
 // Initialize second light lighting parameters
-color4 light2_ambient(0.2, 0.0, 0.2, 1.0);
-color4 light2_diffuse(0.7, 0.3, 0.7, 1.0);
-color4 light2_specular(0.6, 0.0, 0.6, 1.0);
+color4 light2_ambient(1.0, 1.0, 1.0, 1.0);
+color4 light2_diffuse(1.0, 1.0, 1.0, 1.0);
+color4 light2_specular(1.0, 1.0, 1.0, 1.0);
 
 // Material Properties for spheres
-color4 material_ambient(1.0, 0.0, 1.0, 1.0);
-color4 material_diffuse(1.0, 0.8, 0.0, 1.0);
-color4 material_specular(1.0, 0.0, 1.0, 1.0);
-float  material_shininess = 500.0;
+color4 material_ambient(1.0, 1.0, 1.0, 1.0);
+color4 material_diffuse(1.0, 1.0, 1.0, 1.0);
+color4 material_specular(1.0, 1.0, 1.0, 1.0);
+float  material_shininess = 50.0;
 
 // Next variables used to move light2.
-GLfloat light_theta=0.0;  // the angle of light2
+GLfloat light_theta = 0.0;  // the angle of light2
 GLfloat light_incr= 0.001;// the amount to move light2 in radians/millisecond
-bool rotate=false;        // are we animating light2?
+bool rotate = false;        // are we animating light2?
 
 GLuint Light1;     // uniform location to turn light on or off
 GLuint Light2;     // uniform location to turn light on or off
 
-bool light1=true;  // Is light1 on?
-bool light2=true;  // Is light2 on?
+bool light1 = true;  // Is light1 on?
+bool light2 = true;  // Is light2 on?
 
-// Next two variables are to set whether an object has an emissive
-// term in the light equation (does it glow?, and what color?).
-// Default emissive color:
-color4 emissive(0.7, 0.0, 0.7, 1.0);
-// Default emissive color if not emissive object:
+color4 emissive(1.0, 1.0, 1.0, 1.0);
 color4 emissive_off(0.0, 0.0, 0.0, 1.0);
 
 GLuint Material_Emiss; // uniform location of emissive property of surface
 
-color4 ambient_product = light_ambient * material_ambient;
-color4 diffuse_product = light_diffuse * material_diffuse;
-color4 specular_product = light_specular * material_specular;
+color4 ap = light_ambient * material_ambient;
+color4 dp = light_diffuse * material_diffuse;
+color4 sp = light_specular * material_specular;
 
-color4 ambient2_product = light2_ambient * material_ambient;
-color4 diffuse2_product = light2_diffuse * material_diffuse;
-color4 specular2_product = light2_specular * material_specular;
+color4 ap2 = light2_ambient * material_ambient;
+color4 dp2 = light2_diffuse * material_diffuse;
+color4 sp2 = light2_specular * material_specular;
 
 // color4 vertex_colors[8] = {
 //
@@ -288,35 +306,49 @@ void tetrahedron(int count)
 //
 void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d, GLfloat r, GLfloat g, GLfloat b, int pitch, int yaw, int roll, int sl, int st, int type) {
 
+  if (death) {
+    ap = light_ambient * vec4(r, g, b, 1.0);
+    dp = light_diffuse * vec4(r, g, b, 1.0);
+    sp = light_specular * vec4(r, g, b, 1.0);
+    ap2 = light2_ambient * vec4(1.0, 0.0, 0.0, 1.0);
+    dp2 = light2_diffuse * vec4(1.0, 0.0, 0.0, 1.0);
+    sp2 = light2_specular * vec4(1.0, 0.0, 0.0, 1.0);
+  } else {
+    ap = light_ambient * vec4(r, g, b, 1.0);
+    dp = light_diffuse * vec4(r, g, b, 1.0);
+    sp = light_specular * vec4(r, g, b, 1.0);
+    ap2 = light2_ambient * vec4(r, g, b, 1.0);
+    dp2 = light2_diffuse * vec4(r, g, b, 1.0);
+    sp2 = light2_specular * vec4(r, g, b, 1.0);
+  }
+
+    glUniform4fv(ambient_product, 1, ap);
+    glUniform4fv(diffuse_product, 1, dp);
+    glUniform4fv(specular_product, 1, sp);
+
+    glUniform4fv(ambient_product2, 1, ap2);
+    glUniform4fv(diffuse_product2, 1, dp2);
+    glUniform4fv(specular_product2, 1, sp2);
+
     mat4 instance = (
       Translate( x, y, z )
       * RotateX(pitch) * RotateY(yaw) * RotateZ(roll)
     );
 
-    if (death)
-      glUniform4fv( color_change, 1, vec4(1.0, 0.0, 0.0, 1.0) );
-    else
-      glUniform4fv( color_change, 1, vec4(r, g, b, 1.0) );
-
     switch (type) {
       case 0:
-        // glShadeModel(GL_SMOOTH);
-        // glUniform4fv(Material_Emiss, 1, light_diffuse);
-        // glUniform4fv(Material_Emiss, 1, light2_diffuse);
         glUniformMatrix4fv( uniform, 1, GL_TRUE, matrix * instance * Scale( w, h, d ) );
         glUniform1f( enable, 0.0 );
         glDrawArrays( GL_TRIANGLES, 0, NumVertices ); break;
-        // glUniform4fv(Material_Emiss, 1, emissive_off); break;
-      case 1:
-        glUniformMatrix4fv( uniform, 1, GL_TRUE, matrix * instance );
-        glUniform1f( enable, 2.0 );
-        gluCylinder(qobj, w, d, h, sl, st); break;
+      // case 1:
+      //   glUniformMatrix4fv( uniform, 1, GL_TRUE, matrix * instance );
+      //   glUniform1f( enable, 2.0 );
+      //   gluCylinder(qobj, w, d, h, sl, st); break;
       case 2:
-        // glShadeModel(GL_FLAT);
-        glUniform4fv(Material_Emiss, 1, light2_diffuse);
-        glUniformMatrix4fv( uniform, 1, GL_TRUE, matrix * instance * Scale( w, h, d ) );
-        glUniform1f( enable, 1.0 );
-        glDrawArrays( GL_TRIANGLES, NumVertices, NumVertices2 );
+        glUniform4fv(Material_Emiss, 1, emissive);
+          glUniformMatrix4fv( uniform, 1, GL_TRUE, matrix * instance * Scale( w, h, d ) );
+          glUniform1f( enable, 1.0 );
+          glDrawArrays( GL_TRIANGLES, NumVertices, NumVertices2 );
         glUniform4fv(Material_Emiss, 1, emissive_off); break;
 
     };
@@ -338,6 +370,19 @@ void collision(GLfloat *x, GLfloat y, GLfloat *z, GLfloat w, GLfloat h, GLfloat 
       else if (r < f && r < b && r < l) { *x -= r; }
       else if (f < b && f < l && f < r) { *z += f; }
       else if (b < f && b < l && b < r) { *z -= b; }
+    } else {
+      result[i] = false;
+    }
+  }
+}
+
+void proximity(GLfloat *x, GLfloat y, GLfloat *z, GLfloat w, GLfloat h, GLfloat d, vec3 loc[], vec3 size[], bool result[], int num) {
+  for (int i = 0; i < num; i++) {
+    if (*x - w / 2 < loc[i].x + size[i].x + 2.0 / 2 &&
+        *x + w / 2 > loc[i].x - size[i].x - 2.0 / 2 &&
+        *z - d / 2 < loc[i].z + size[i].z + 2.0 / 2 &&
+        *z + d / 2 > loc[i].z - size[i].z - 2.0 / 2 ) {
+      result[i] = true;
     } else {
       result[i] = false;
     }
@@ -461,15 +506,14 @@ void init(int argc, char **argv) {
   color_change = glGetUniformLocation(program, "color_change");
   enable = glGetUniformLocation(program, "enable");
 
-  glUniform4fv(glGetUniformLocation(program, "AmbientProduct"), 1, ambient_product);
-  glUniform4fv(glGetUniformLocation(program, "DiffuseProduct"), 1, diffuse_product);
-  glUniform4fv(glGetUniformLocation(program, "SpecularProduct"), 1, specular_product);
+  ambient_product = glGetUniformLocation(program, "AmbientProduct");
+  diffuse_product = glGetUniformLocation(program, "DiffuseProduct");
+  specular_product = glGetUniformLocation(program, "SpecularProduct");
+  ambient_product2 = glGetUniformLocation(program, "AmbientProduct2");
+  diffuse_product2 = glGetUniformLocation(program, "DiffuseProduct2");
+  specular_product2 = glGetUniformLocation(program, "SpecularProduct2");
 
   glUniform4fv(glGetUniformLocation(program, "LightPosition"), 1, light_position);
-
-  glUniform4fv(glGetUniformLocation(program, "AmbientProduct2"), 1, ambient2_product);
-  glUniform4fv(glGetUniformLocation(program, "DiffuseProduct2"), 1, diffuse2_product);
-  glUniform4fv(glGetUniformLocation(program, "SpecularProduct2"), 1, specular2_product);
 
   Light2_Pos = glGetUniformLocation(program, "LightPosition2");
   glUniform4fv(Light2_Pos, 1, light2_position);
