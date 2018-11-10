@@ -28,9 +28,10 @@ TODO:
 - [x] lighting?
 - [ ] light object if theres time
 - [ ] material for every object?
-- [ ] light effects on player
+- [ ] ~~light effects on player~~
+- [ ] fake it ;)
 - [ ] player representation
-- [ ] hallucinations
+- [x] hallucinations
 - [ ] 2D overlay
 - [ ] start screen
 
@@ -39,6 +40,8 @@ TODO:
 - [x] door rotation
 - [ ] door collision
 - [x] agency movement
+- [x] agency chasing
+- [ ] werewolf chasing
 - [x] pickups
 - [x] fake pickup functionality
 - [x] using objects in proximity

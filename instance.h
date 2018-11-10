@@ -30,6 +30,8 @@ GLfloat wall_height = 5.0,
         door_vert = 2.5,
         ghost_mult = 1.0,
         bookcase_z = -45.0,
+        dizziness = 0.0,
+        nausea = 0.0,
         zombie_mult[NUM_ZOMBIES] = { 1.0 },
         door_height = 27.5,
         speed_boost = 1.0;
@@ -44,9 +46,11 @@ vec3 agency_loc = vec3(-51.0, 0.0, 10.0),
      ghost_loc = vec3(-17.5, ghost_height[0], -5.0),
      picture_loc = vec3(12.5, 0.0, -1.0);
 
-int picture_rot = 225, flicker = 0, door_open = 0;
+int picture_rot = 225, flicker = 0, door_open[NUM_DOORS] = { 0 };
 
 bool draw_table = false,
+     open_door[NUM_DOORS] = { false },
+     werewolf_chase = false,
      ghost_chase = false,
      get_sweeper = false,
      kill_ghost = false,
@@ -113,14 +117,31 @@ void animation(void) {
 
   static int step;
 
-  if (rooms[0]) { } else { }
+  if (rooms[0]) {
+    if (doors[0]){
+      if (action) {
+        open_door[0] = true;
+      }
+    }
+  } else { }
 
-  if (rooms[1]) { } else { }
+  if (rooms[1]) {
+    if (doors[1]){
+      if (action) {
+        open_door[1] = true;
+      }
+    }
+  } else { }
 
   if (rooms[2]) {
     ghost_chase = true;
     if (pickup[0]){
       get_sweeper = true;
+    }
+    if (doors[2]){
+      if (action) {
+        open_door[2] = true;
+      }
     }
   }
   else { ghost_chase = false; }
@@ -129,6 +150,11 @@ void animation(void) {
     if (proximal[2]){
       if (action) {
         fix_picture = true;
+      }
+    }
+    if (doors[3]){
+      if (action) {
+        open_door[3] = true;
       }
     }
   } else {
@@ -150,21 +176,51 @@ void animation(void) {
     if (pickup[1]){
       get_key = true;
     }
+    if (doors[4]){
+      if (action) {
+        open_door[4] = true;
+      }
+    }
   } else { }
 
-  if (rooms[6]) { agency_chase = true; }
-  else { agency_chase = false; }
+  if (rooms[6]) {
+    agency_loc = vec3(45.0, 0.0, 20.0);
+    hallucinate = true;
+    agency_chase = true;
+    dizziness = sickness(mt);
+    nausea += 0.001 + dizziness;
+    phi = 45 * -sin(nausea *180/M_PI);
+    theta = -90 + 45 * cos((nausea *180/M_PI)/2);
+    if (doors[5]){
+      if (action) {
+        open_door[5] = true;
+      }
+    }
+  } else {
+    hallucinate = false;
+    agency_chase = false;
+  }
 
   if (rooms[7]) {
     zombie_chase = true;
     if (pickup[2]){
       get_gun = true;
     }
+    if (doors[6]){
+      if (action) {
+        open_door[6] = true;
+      }
+    }
   }
   else { zombie_chase = false; }
 
   if (rooms[8]) {
     agency_loc = vec3(51.0, 0.0, 30.0);
+    if (doors[7]){
+      if (action) {
+        open_door[7] = true;
+      }
+    }
   } else { }
 
   if (rooms[9]) {
@@ -254,6 +310,12 @@ void animation(void) {
 
   if (darts == 0) exit(EXIT_SUCCESS);
 
+  for (int i = 0; i < NUM_DOORS; i++) {
+    if (door_open[i] < 90) {
+      if (open_door[i]) { door_open[i] += 1; }
+    }
+  }
+
   if (ghost_chase) {
     if (ghost_loc.x != mvx) {
       if (ghost_loc.x - mvx < 0) {
@@ -307,6 +369,25 @@ void animation(void) {
 
   }
 
+  if (agency_chase) {
+    if (agency_loc.x != mvx) {
+      if (agency_loc.x - mvx < 0) {
+        agency_loc.x += 0.1;
+      }
+      if (agency_loc.x - mvx > 0) {
+        agency_loc.x -= 0.1;
+      }
+    }
+    if (agency_loc.z != mvz) {
+      if (agency_loc.z - mvz < 0) {
+        agency_loc.z += 0.1;
+      }
+      if (agency_loc.z - mvz > 0) {
+        agency_loc.z -= 0.1;
+      }
+    }
+  }
+
   if (zombie_chase) {
     for (int i = 0; i < 3; i++) {
       if (zombie_loc[i].x != mvx) {
@@ -352,7 +433,7 @@ void animation(void) {
     speed_boost = 2.0;
   }
 
-  title_bar = "Score: " + std::to_string(mvx) + " Darts: " + std::to_string(mvz) + " bool: " + std::to_string(pickup[1]); // + " l:" + std::to_string(l) + " r:" + std::to_string(r) + " f:" + std::to_string(f) + " b:" + std::to_string(b);
+  title_bar = "Score: " + std::to_string(theta) + " Darts: " + std::to_string(phi) + " bool: " + std::to_string(pickup[1]); // + " l:" + std::to_string(l) + " r:" + std::to_string(r) + " f:" + std::to_string(f) + " b:" + std::to_string(b);
 
   for (int i = 0; i < 256; i++) {
 
@@ -366,7 +447,7 @@ void animation(void) {
         case 'd': { mvx += speed_boost * sin(theta*M_PI/180)/2; mvz -= speed_boost * cos(theta*M_PI/180)/2; } break;
         case 'f': { action = true; } break; // Action
         case ' ': { if (reload) { fire_gun = true; darts--; } } break; // Shoot
-        case '1': { door_open += 1; } break; // Weapon 1
+        case '1': { } break; // Weapon 1
         case '2': { } break; // Weapon 2
         case '3': { } break; // Weapon 3
         case 'c': perspective = !perspective; break; //fire

@@ -104,6 +104,8 @@ bool proximal[NUM_INTERACTABLES] = { false };
 
 bool pickup[NUM_PICKUPS] = { false };
 
+bool doors[NUM_DOORS] = { false };
+
 bool g_die[NUM_GHOSTS] = { false };
 
 bool z_die[NUM_ZOMBIES] = { false };
@@ -123,7 +125,7 @@ bool spec_buffer[256] = { false };
 
 bool display_bool = false;
 
-bool death = false;
+bool death = false, hallucinate = false;
 
 // Random
 uint64_t seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -131,7 +133,10 @@ std::seed_seq ss{ uint32_t( seed & 0xffffffff ), uint32_t( seed >> 32 ) };
 std::mt19937 mt(ss);
 std::uniform_real_distribution<double> dist_x(-7.0, 7.0);
 std::uniform_real_distribution<double> dist_z(-10.0, -6.0);
-
+std::uniform_real_distribution<double> sickness(0.0, 0.005);
+std::uniform_real_distribution<double> morpher1(0.0, 0.5);
+std::uniform_real_distribution<double> morpher2(0.0, 0.5);
+std::uniform_real_distribution<double> morpher3(0.0, 0.5);
 // Position of light1
 point4 light_position(-65.0,  30.0, -55.0, 1.0);
 // If you want a non-positional light use 0.0 for fourth value
@@ -313,6 +318,13 @@ void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z, GLfloa
     ap2 = light2_ambient * vec4(1.0, 0.0, 0.0, 1.0);
     dp2 = light2_diffuse * vec4(1.0, 0.0, 0.0, 1.0);
     sp2 = light2_specular * vec4(1.0, 0.0, 0.0, 1.0);
+  } else if (hallucinate) {
+    ap = light_ambient * vec4(morpher1(mt), morpher2(mt), morpher3(mt), 1.0);
+    dp = light_diffuse * vec4(morpher1(mt), morpher2(mt), morpher3(mt), 1.0);
+    sp = light_specular * vec4(morpher1(mt), morpher2(mt), morpher3(mt), 1.0);
+    ap2 = light2_ambient * vec4(morpher1(mt), morpher2(mt), morpher3(mt), 1.0);
+    dp2 = light2_diffuse * vec4(morpher1(mt), morpher2(mt), morpher3(mt), 1.0);
+    sp2 = light2_specular * vec4(morpher1(mt), morpher2(mt), morpher3(mt), 1.0);
   } else {
     ap = light_ambient * vec4(r, g, b, 1.0);
     dp = light_diffuse * vec4(r, g, b, 1.0);
@@ -321,6 +333,7 @@ void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z, GLfloa
     dp2 = light2_diffuse * vec4(r, g, b, 1.0);
     sp2 = light2_specular * vec4(r, g, b, 1.0);
   }
+
 
     glUniform4fv(ambient_product, 1, ap);
     glUniform4fv(diffuse_product, 1, dp);

@@ -67,7 +67,7 @@ void display(void) {
   floor();
   walls();
   roof();
-  doors();
+  door();
   moon();
   bookcase();
   tables();
@@ -98,6 +98,7 @@ void display(void) {
   // collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, door_loc, door_size, collide, NUM_DOORS);
   collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, ghosts_loc, ghosts_size, g_die, NUM_GHOSTS);
   collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, zombies_loc, zombies_size, z_die, NUM_ZOMBIES);
+  proximity(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, door_loc, door_size, doors, NUM_DOORS);
   proximity(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, inter_loc, inter_size, proximal, NUM_INTERACTABLES);
   proximity(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, pickup_loc, pickup_size, pickup, NUM_PICKUPS);
 
@@ -149,19 +150,19 @@ void roof() {
   object(mv, model_view, -50.0 + FLOOR_SIZE / 2, 12.5, -50.0 + FLOOR_SIZE / 2, ROOF_W, ROOF_H, ROOF_D, ROOF_R, ROOF_G, ROOF_B, 0, 0, 0, 0, 0, 0);
 }
 
-void doors() {
+void door() {
   for (int i = 0; i < NUM_DOORS; i++) {
     if (door_rot[i] == 0) {
-        object(mv, model_view, door_loc[i].x - 2.5 + 2.5 * cos(door_open * M_PI/180), door_vert, door_loc[i].z + 2.5 * sin(-door_open * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open, 0, 0, 0, 0);
+        object(mv, model_view, door_loc[i].x - 2.5 + 2.5 * cos(door_open[i] * M_PI/180), door_vert, door_loc[i].z + 2.5 * sin(-door_open[i] * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open[i], 0, 0, 0, 0);
     }
     if (door_rot[i] == 180) {
-        object(mv, model_view, door_loc[i].x + 2.5 - 2.5 * cos(door_open * M_PI/180), door_vert, door_loc[i].z - 2.5 * sin(-door_open * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open, 0, 0, 0, 0);
+        object(mv, model_view, door_loc[i].x + 2.5 - 2.5 * cos(door_open[i] * M_PI/180), door_vert, door_loc[i].z - 2.5 * sin(-door_open[i] * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open[i], 0, 0, 0, 0);
     }
     if (door_rot[i] == -90) {
-        object(mv, model_view, door_loc[i].x + 2.5 * sin(door_open * M_PI/180), door_vert, door_loc[i].z - 2.5  + 2.5 * cos(-door_open * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open, 0, 0, 0, 0);
+        object(mv, model_view, door_loc[i].x + 2.5 * sin(door_open[i] * M_PI/180), door_vert, door_loc[i].z - 2.5  + 2.5 * cos(-door_open[i] * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open[i], 0, 0, 0, 0);
     }
     if (door_rot[i] == 90) {
-        object(mv, model_view, door_loc[i].x - 2.5 * sin(door_open * M_PI/180), door_vert, door_loc[i].z + 2.5 - 2.5 * cos(-door_open * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open, 0, 0, 0, 0);
+        object(mv, model_view, door_loc[i].x - 2.5 * sin(door_open[i] * M_PI/180), door_vert, door_loc[i].z + 2.5 - 2.5 * cos(-door_open[i] * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open[i], 0, 0, 0, 0);
     }
     object(mv, model_view, door_loc[i].x, 10.0, door_loc[i].z, DOOR_W, 5.0, DOOR_D, LON_WALL_R, LON_WALL_G, LON_WALL_B, 0, door_rot[i], 0, 0, 0, 0);
   }

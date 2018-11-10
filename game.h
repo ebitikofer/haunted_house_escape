@@ -6,7 +6,7 @@ void set_objects();
 void walls();
 void roof();
 void floor();
-void doors();
+void door();
 void doorknob();
 void tables();
 
