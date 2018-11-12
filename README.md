@@ -22,8 +22,8 @@ CAMERA CONTROLS:
 **A**: strafe left  
 **D**: strafe right  
 
-**F**: action
-**SHIFT+Q**: quit   
+**F**: action  
+**SHIFT+Q**: quit  
 
 TODO:
 
