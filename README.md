@@ -1,4 +1,4 @@
-Instructions:
+### Instructions: ###
 
     sudo apt-get update
     sudo apt-get install git
@@ -10,12 +10,14 @@ Instructions:
     make
     ./game
 
-CAMERA CONTROLS:
+### CAMERA: ###  
 
 :arrow_up:: pitch up  
 :arrow_down:: pitch down  
 :arrow_left:: yaw left  
 :arrow_right:: yaw right  
+
+### GAME: ###  
 
 **W**: axially forward  
 **S**: axially backward  
@@ -23,11 +25,14 @@ CAMERA CONTROLS:
 **D**: strafe right  
 
 **F**: action  
+
+### GAME: ###  
+
 **SHIFT+Q**: quit  
 
-TODO:
+##TODO:##  
 
-   HARD:
+HARD:
 - [x] lighting?
 - [ ] ~~light object if theres time~~
 - [ ] material for every object?
@@ -38,7 +43,7 @@ TODO:
 - [ ] 2D overlay
 - [ ] start screen
 
-   EASY:
+EASY:
 - [ ] light switch and fire
 - [x] door rotation
 - [x] door collision
@@ -51,7 +56,7 @@ TODO:
 - [ ] set all actions
 - [ ] ending
 
-   TEDIOUS:
+TEDIOUS:
 - [x] proper windows
 - [ ] more lights
 - [ ] enemy collision with walls
