@@ -1,4 +1,4 @@
-### INSTRUCTIONS: ###
+## INSTALLATION: ##
 
     sudo apt-get update
     sudo apt-get install git
@@ -10,14 +10,16 @@
     make
     ./game
 
-### CAMERA: ###  
+## CONTROLS: ##  
+
+### camera: ###  
 
 :arrow_up:: pitch up  
 :arrow_down:: pitch down  
 :arrow_left:: yaw left  
 :arrow_right:: yaw right  
 
-### CHARACTER: ###  
+### character: ###  
 
 **W**: axially forward  
 **S**: axially backward  
@@ -26,7 +28,7 @@
 
 **F**: action  
 
-### GAME: ###  
+### game: ###  
 
 **SHIFT+Q**: quit  
 
