@@ -6,6 +6,8 @@ void set_objects();
 void walls();
 void roof();
 void floor();
+void character();
+void hud();
 void door();
 void doorknob();
 void tables();
@@ -24,6 +26,7 @@ void key();
 void fire();
 void agency();
 
+void gun_pickup();
 void gun();
 void zombies();
 void coffee();

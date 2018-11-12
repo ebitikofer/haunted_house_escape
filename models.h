@@ -15,9 +15,9 @@
 #define COLOR_SKY 1
 //   vec3(0.8, 1.0, 1.0),
 
-#define PLAYER_W 1.0
+#define PLAYER_W 2.0
 #define PLAYER_H 10.0
-#define PLAYER_D 1.0
+#define PLAYER_D 2.0
 
 #define FLOOR_W TILE_SIZE
 #define FLOOR_H 0.1

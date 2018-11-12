@@ -18,19 +18,22 @@ CAMERA CONTROLS:
 :arrow_right:: yaw right  
 
 **W**: axially forward  
-**S**: axiall backward  
+**S**: axially backward  
 **A**: strafe left  
 **D**: strafe right  
+
+**F**: action
+**SHIFT+Q**: quit   
 
 TODO:
 
    HARD:
 - [x] lighting?
-- [ ] light object if theres time
+- [ ] ~~light object if theres time~~
 - [ ] material for every object?
 - [ ] ~~light effects on player~~
 - [ ] ^^ fake it ;) ^^
-- [ ] player representation
+- [x] player representation
 - [x] hallucinations
 - [ ] 2D overlay
 - [ ] start screen
@@ -38,7 +41,7 @@ TODO:
    EASY:
 - [ ] light switch and fire
 - [x] door rotation
-- [ ] door collision
+- [x] door collision
 - [x] agency movement
 - [x] agency chasing
 - [ ] werewolf chasing

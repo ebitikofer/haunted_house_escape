@@ -18,7 +18,7 @@ vec3 feather = vec3(FEATHER_RE, FEATHER_GR, FEATHER_BL);
 float dart_x = 0.0, dart_z = 0.0;
 bool fire_gun = false, reload = true, action = false;
 float elevation = 0.0, frame = 3.0;
-int darts = 10, score = 0;
+int health = 2, score = 0;
 bool solid_part = true, game_over = false;
 
 
@@ -48,7 +48,9 @@ vec3 agency_loc = vec3(-51.0, 0.0, 10.0),
 
 int picture_rot = 225, flicker = 0, door_open[NUM_DOORS] = { 0 };
 
-bool draw_table = false,
+bool toggle = true,
+     draw_table = false,
+     door_collide = true,
      open_door[NUM_DOORS] = { false },
      werewolf_chase = false,
      ghost_chase = false,
@@ -103,6 +105,7 @@ void set_room(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d){
       if (!displayed[i]) {
         std::cout << "ROOM" << (i + 1) << std::endl;
         displayed[i] = true;
+      } else {
       }
       rooms[i] = true;
     } else {
@@ -115,9 +118,32 @@ void set_room(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d){
 // animation function, runs the updating of the variables
 void animation(void) {
 
-  static int step;
+  static GLint lasttime = glutGet(GLUT_ELAPSED_TIME);
+  GLint time = glutGet(GLUT_ELAPSED_TIME);
 
   set_room(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
+
+  // if (rotatep) move_angle += 20.0 / 1000.0 * (time - lasttime);
+
+  // doorAngle += doorAngleIncr / 1000.0 * (time - lasttime);
+
+  // if (doorAngle > 60.0) doorAngleIncr *= -1.0;
+
+  // if (doorAngle < 0.0) { doorAngle = 0.0; doorAngleIncr *= -1.0; }
+
+
+
+
+
+  // // Do the animation code here in idle, not in display. Code for moving 2nd cube
+
+  // trans += transinc / 1000.0 * ( time - lasttime );
+
+  // if (trans > 1.5) { trans = 1.5; transinc *= -1; }
+
+  // if (trans < -1.5) { trans = -1.5; transinc *= -1; }
+
+  static int step;
 
   if (rooms[0]) {
     if (doors[0]){
@@ -298,23 +324,11 @@ void animation(void) {
   // if (mvx >= DRAW_DISTANCE) { mvx = -DRAW_DISTANCE; regen = true; }
   // if (mvx < -DRAW_DISTANCE) { mvx =  DRAW_DISTANCE; regen = true; }
 
-  // static GLint lasttime = glutGet(GLUT_ELAPSED_TIME);
-  // GLint time = glutGet(GLUT_ELAPSED_TIME);
-  // if (rotatep) move_angle += 20.0 / 1000.0 * (time - lasttime);
-  // doorAngle += doorAngleIncr / 1000.0 * (time - lasttime);
-  // if (doorAngle > 60.0) doorAngleIncr *= -1.0;
-  // if (doorAngle < 0.0) { doorAngle = 0.0; doorAngleIncr *= -1.0; }
-  // // Do the animation code here in idle, not in display. Code for moving 2nd cube
-  // trans += transinc / 1000.0 * ( time - lasttime );
-  // if (trans > 1.5) { trans = 1.5; transinc *= -1; }
-  // if (trans < -1.5) { trans = -1.5; transinc *= -1; }
-  // lasttime=time;
-
-  if (darts == 0) exit(EXIT_SUCCESS);
+  if (health == 0) exit(EXIT_SUCCESS);
 
   for (int i = 0; i < NUM_DOORS; i++) {
-    if (door_open[i] < 90) {
-      if (open_door[i]) { door_open[i] += 1; }
+    if (door_open[i] < 90) { // door_rot[i] + 90) {
+      if (open_door[i]) { door_open[i] += 0.1 * (time - lasttime); }
     }
   }
 
@@ -435,7 +449,9 @@ void animation(void) {
     speed_boost = 2.0;
   }
 
-  title_bar = "Score: " + std::to_string(theta) + " Darts: " + std::to_string(phi) + " bool: " + std::to_string(pickup[1]); // + " l:" + std::to_string(l) + " r:" + std::to_string(r) + " f:" + std::to_string(f) + " b:" + std::to_string(b);
+  title_bar = "Score: " + std::to_string(theta) + " Darts: " + std::to_string(phi) + " bool: " + std::to_string(0.01 * (time - lasttime)); // + " l:" + std::to_string(l) + " r:" + std::to_string(r) + " f:" + std::to_string(f) + " b:" + std::to_string(b);
+
+  if (mouse_button == 3 && changed) { fovy -= 5.0; changed = false; } else if (mouse_button == 4 && changed) { fovy += 5.0; changed = false; }
 
   for (int i = 0; i < 256; i++) {
 
@@ -448,11 +464,11 @@ void animation(void) {
         case 'a': { mvx -= speed_boost * sin(theta*M_PI/180)/2; mvz += speed_boost * cos(theta*M_PI/180)/2; } break;
         case 'd': { mvx += speed_boost * sin(theta*M_PI/180)/2; mvz -= speed_boost * cos(theta*M_PI/180)/2; } break;
         case 'f': { action = true; } break; // Action
-        case ' ': { if (reload) { fire_gun = true; darts--; } } break; // Shoot
+        // case ' ': { if (reload) { fire_gun = true; darts--; } } break; // Shoot
         case '1': { hallucinate = !hallucinate; } break; // Weapon 1
         case '2': { } break; // Weapon 2
         case '3': { } break; // Weapon 3
-        case 'c': perspective = !perspective; break; //fire
+        case 'c': if (toggle) { perspective = !perspective; toggle = false; } break; //fire
         // Utility
         case '-': light1 = !light1; glUniform1i(Light1,light1); break;
         case '=': light2 = !light2; glUniform1i(Light2,light2); break;
@@ -470,8 +486,9 @@ void animation(void) {
       }
     } else {
       switch (i) {
-        case ' ': fire_gun = false; break; // Stop firing, not the same as bullet landing
+        // case ' ': fire_gun = false; break; // Stop firing, not the same as bullet landing
         case 'f': { action = false; } break; //wire
+        case 'c': { toggle = true; } break; //fire
       }
     }
 
@@ -485,6 +502,8 @@ void animation(void) {
     }
 
   }
+
+  lasttime=time;
 
   glutPostRedisplay();
 
@@ -535,7 +554,7 @@ void glutMenu(void) {
   glutAddSubMenu("How to...", glut_menu[0]);
   glutAddMenuEntry("Quit", 4);
   // glutAttachMenu(GLUT_LEFT_BUTTON);
-  glutAttachMenu(GLUT_RIGHT_BUTTON);
+  glutAttachMenu(GLUT_MIDDLE_BUTTON);
 
 }
 

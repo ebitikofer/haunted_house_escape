@@ -10,7 +10,7 @@
 #define __ANGEL_H__
 
 //----------------------------------------------------------------------------
-// 
+//
 // --- Include system headers ---
 //
 
@@ -39,7 +39,7 @@
 //#else // non-Mac OS X operating systems
 #  include <GL/glew.h>
 //#  include <GL/freeglut.h>
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 #include <iostream>
 //#  include <GL/freeglut_ext.h>
 //#endif  // __APPLE__
@@ -68,7 +68,7 @@ namespace Angel {
   //    DEBUG macro is defined.
   const GLfloat  DivideByZeroTolerance = GLfloat(1.0e-07);
 
-  //  Degrees-to-radians constant 
+  //  Degrees-to-radians constant
   const GLfloat  DegreesToRadians = M_PI / 180.0;
 
 }  // namespace Angel

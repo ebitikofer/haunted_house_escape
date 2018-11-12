@@ -78,7 +78,7 @@ GLfloat mvz = 30.0;
 // GLfloat mvz = 45.0;
 
 // Projection transformation parameters
-GLfloat fovy = 65.0;  // Field-of-view in Y direction angle (in degrees)
+GLfloat fovy = 70.0;  // Field-of-view in Y direction angle (in degrees)
 GLfloat zNear = 0.5;  // Near clipping plane
 GLfloat zFar = 250.0; // Far clipping plane
 GLfloat aspect;       // Viewport aspect ratio
@@ -86,7 +86,7 @@ GLfloat aspect;       // Viewport aspect ratio
 const GLfloat dr = 5.0; // 5.0 * DegreesToRadians;
 
 // Viewing transformation parameters
-GLfloat radius = 1.0;
+GLfloat radius = 0.0;
 GLfloat theta = 90.0;
 GLfloat phi = 0.0;
 GLfloat psi = 0.0;
@@ -125,6 +125,9 @@ int Index = 0;        // Global to keep track of what vertex we are setting.
 bool key_buffer[256] = { false };
 bool spec_buffer[256] = { false };
 
+static int mouse_button;
+bool changed = false;
+
 bool display_bool = false;
 
 bool death = false, hallucinate = false;
@@ -138,8 +141,7 @@ std::uniform_real_distribution<double> dist_z(-10.0, -6.0);
 std::uniform_real_distribution<double> sickness(0.0, 0.005);
 std::uniform_real_distribution<double> morpher1(0.0, 0.5);
 std::uniform_real_distribution<double> morpher2(0.0, 0.5);
-std::uniform_real_distribution<double> morpher3(
-);
+// std::uniform_real_distribution<double> morpher3();
 // Position of light1
 point4 light_position(-65.0,  30.0, -55.0, 1.0);
 // If you want a non-positional light use 0.0 for fourth value
@@ -375,37 +377,33 @@ void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z, GLfloa
 
 }
 
-void collision(GLfloat *x, GLfloat y, GLfloat *z, GLfloat w, GLfloat h, GLfloat d, vec3 loc[], vec3 size[], bool result[], int num) {
-  for (int i = 0; i < num; i++) {
-    if (*x - w / 2 < loc[i].x + size[i].x / 2 &&
-        *x + w / 2 > loc[i].x - size[i].x / 2 &&
-        *z - d / 2 < loc[i].z + size[i].z / 2 &&
-        *z + d / 2 > loc[i].z - size[i].z / 2 ) {
-      result[i] = true;
-      l = (loc[i].x + size[i].x / 2) - (*x - w / 2);
-      r = (*x + w / 2) - (loc[i].x - size[i].x / 2);
-      f = (loc[i].z + size[i].z / 2) - (*z - d / 2);
-      b = (*z + d / 2) - (loc[i].z - size[i].z / 2);
-      if (l < f && l < b && l < r) { *x += l; }
-      else if (r < f && r < b && r < l) { *x -= r; }
-      else if (f < b && f < l && f < r) { *z += f; }
-      else if (b < f && b < l && b < r) { *z -= b; }
-    } else {
-      result[i] = false;
-    }
+void collision(GLfloat *x, GLfloat y, GLfloat *z, GLfloat w, GLfloat h, GLfloat d, vec3 loc, vec3 size, bool &result) {
+  if (*x - w / 2 < loc.x + size.x / 2 &&
+      *x + w / 2 > loc.x - size.x / 2 &&
+      *z - d / 2 < loc.z + size.z / 2 &&
+      *z + d / 2 > loc.z - size.z / 2 ) {
+    result = true;
+    l = (loc.x + size.x / 2) - (*x - w / 2);
+    r = (*x + w / 2) - (loc.x - size.x / 2);
+    f = (loc.z + size.z / 2) - (*z - d / 2);
+    b = (*z + d / 2) - (loc.z - size.z / 2);
+    if (l < f && l < b && l < r) { *x += l; }
+    else if (r < f && r < b && r < l) { *x -= r; }
+    else if (f < b && f < l && f < r) { *z += f; }
+    else if (b < f && b < l && b < r) { *z -= b; }
+  } else {
+    result = false;
   }
 }
 
-void proximity(GLfloat *x, GLfloat y, GLfloat *z, GLfloat w, GLfloat h, GLfloat d, vec3 loc[], vec3 size[], bool result[], int num) {
-  for (int i = 0; i < num; i++) {
-    if (*x - w / 2 < loc[i].x + size[i].x + 2.0 / 2 &&
-        *x + w / 2 > loc[i].x - size[i].x - 2.0 / 2 &&
-        *z - d / 2 < loc[i].z + size[i].z + 2.0 / 2 &&
-        *z + d / 2 > loc[i].z - size[i].z - 2.0 / 2 ) {
-      result[i] = true;
-    } else {
-      result[i] = false;
-    }
+void proximity(GLfloat *x, GLfloat y, GLfloat *z, GLfloat w, GLfloat h, GLfloat d, vec3 loc, vec3 size, bool &result) {
+  if (*x - w / 2 < loc.x + size.x + 2.0 / 2 &&
+      *x + w / 2 > loc.x - size.x - 2.0 / 2 &&
+      *z - d / 2 < loc.z + size.z + 2.0 / 2 &&
+      *z + d / 2 > loc.z - size.z - 2.0 / 2 ) {
+    result = true;
+  } else {
+    result = false;
   }
 }
 
@@ -420,6 +418,8 @@ void special(int key, int x, int y) { spec_buffer[key] = true; }
 
 // specialUp function, special callback for special key up functionality
 void specialUp(int key, int x, int y) { spec_buffer[key] = false; }
+
+void mouse(int button, int state, int x, int y) { mouse_button = button; changed = true; }
 
 // myReshape function, reshapes the window when resized
 void reshape(int width, int height) {
@@ -468,6 +468,8 @@ void init(int argc, char **argv) {
   glutKeyboardUpFunc(keyboardUp);
   glutSpecialFunc(special);
   glutSpecialUpFunc(specialUp);
+  glutMouseFunc(mouse);
+
 
   // int j = 0, k = 0;
 
