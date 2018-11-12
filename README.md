@@ -11,26 +11,22 @@
     ./game
 
 ### CONTROLS: ###  
-
-#### camera: ####  
-:arrow_up:: pitch up  
-:arrow_down:: pitch down  
-:arrow_left:: yaw left  
-:arrow_right:: yaw right  
-
-#### character: ####  
+#### camera: ####
+  :arrow_up:: pitch up  
+  :arrow_down:: pitch down  
+  :arrow_left:: yaw left  
+  :arrow_right:: yaw right  
+#### character: ####
 **W**: axially forward  
 **S**: axially backward  
 **A**: strafe left  
 **D**: strafe right  
 **F**: action  
-
-#### game: ####  
+#### game: ####
 **SHIFT+Q**: quit  
+### TODO: ###
 
-### TODO: ###  
-
-HARD:
+  HARD:
 - [x] lighting?
 - [ ] ~~light object if theres time~~
 - [ ] material for every object?
@@ -54,7 +50,7 @@ EASY:
 - [ ] set all actions
 - [ ] ending
 
-TEDIOUS:
+  TEDIOUS:
 - [x] proper windows
 - [ ] more lights
 - [ ] enemy collision with walls
