@@ -17,7 +17,7 @@
 :arrow_left:: yaw left  
 :arrow_right:: yaw right  
 
-### GAME: ###  
+### CHARACTER: ###  
 
 **W**: axially forward  
 **S**: axially backward  
@@ -30,7 +30,7 @@
 
 **SHIFT+Q**: quit  
 
-##TODO:##  
+## TODO: ##  
 
 HARD:
 - [x] lighting?
