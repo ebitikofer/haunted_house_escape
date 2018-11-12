@@ -11,18 +11,18 @@
     ./game
 
 ### CONTROLS: ###  
-#### camera: ####
+#### Camera: ####
   :arrow_up:: pitch up  
   :arrow_down:: pitch down  
   :arrow_left:: yaw left  
   :arrow_right:: yaw right  
-#### character: ####
+#### Character: ####
 **W**: axially forward  
 **S**: axially backward  
 **A**: strafe left  
 **D**: strafe right  
 **F**: action  
-#### game: ####
+#### Game: ####
 **SHIFT+Q**: quit  
 ### TODO: ###
 
@@ -50,7 +50,7 @@ EASY:
 - [ ] set all actions
 - [ ] ending
 
-  TEDIOUS:
+TEDIOUS:
 - [x] proper windows
 - [ ] more lights
 - [ ] enemy collision with walls
