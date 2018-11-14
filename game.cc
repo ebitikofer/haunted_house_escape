@@ -20,7 +20,7 @@ void display(void) {
               else glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
   if (perspective) radius = 6.0;
-              else radius = 0.0001;
+              else radius = 0.1;
 
   glutSetWindowTitle(title_bar.c_str());
 
@@ -46,7 +46,6 @@ void display(void) {
   cv = LookAt(eye, at, up);
   glUniformMatrix4fv(camera_view, 1, GL_TRUE, cv);
 
-  character();
   // glUniformMatrix4fv(model_view, 1, GL_TRUE, mv);
 
   // PLAYER
@@ -59,6 +58,48 @@ void display(void) {
   // object(mv, model_view, 2.0, 0.0, -2.3, FEATHER_B, FEATHER_H, FEATHER_T, 0, 0, 0, FEATHER_SL, FEATHER_ST, 1);
 
   set_objects(); // Set objects for render
+
+  if(!debug) {
+    for (int i = 0; i < NUM_OBJECTS; i++) {
+      collision(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, wall_loc[i], wall_size[i], collide[i]);
+    }
+    for (int i = 0; i < NUM_BOOKCASE; i++) {
+      collision(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, bookcase_loc[i], bookcase_size[i], collide[i]);
+    }
+    for (int i = 0; i < NUM_DOORS; i++) {
+      if (!open_door[i]) collision(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, door_loc[i], door_size[i], collide[i]);
+    }
+    for (int i = 0; i < NUM_TABLES; i++) {
+      collision(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, table_loc[i], table_size[i], collide[i]);
+    }
+    for (int i = 0; i < NUM_GHOSTS; i++) {
+      collision(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, ghosts_loc[0], ghosts_size[0], g_die[0]);
+    }
+    for (int i = 0; i < NUM_ZOMBIES; i++) {
+      collision(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, zombies_loc[i], zombies_size[i], z_die[i]);
+    }
+  }
+
+  for (int i = 0; i < NUM_ZOMBIES; i++) {
+    for (int j = 0; j < NUM_OBJECTS; j++) {
+      collision(zombies_loc[i].x, 0.0, zombies_loc[i].z, PLAYER_W * 2, PLAYER_H * 2, PLAYER_D * 2, wall_loc[j], wall_size[j], collide[j]);
+    }
+  }
+
+  for (int i = 0; i < NUM_DOORS; i++) {
+    proximity(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, door_loc[i], door_size[i], doors[i]);
+  }
+  for (int i = 0; i < NUM_INTERACTABLES; i++) {
+    proximity(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, inter_loc[i], inter_size[i], proximal[i]);
+  }
+  for (int i = 0; i < NUM_PICKUPS; i++) {
+    proximity(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, pickup_loc[i], pickup_size[i], pickup[i]);
+  }
+
+  // collision(&enemy_loc[0].x, 0.0, &enemy_loc[0].z, GHOST_W, GHOST_H, GHOST_D, wall_loc, wall_size, collide, NUM_OBJECTS);
+
+
+  if (perspective) character();
 
   // Environment
   floor();
@@ -76,11 +117,11 @@ void display(void) {
   if (!get_coffee) coffee();
 
   // Props
-  doorknob();
+  // doorknob();
   picture();
   light();
   book();
-  fire();
+  // fire();
 
   // Enemies
   // werewolf();
@@ -88,38 +129,8 @@ void display(void) {
   agency();
   zombies();
 
-  for (int i = 0; i < NUM_OBJECTS; i++) {
-    collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, wall_loc[i], wall_size[i], collide[i]);
-  }
-  for (int i = 0; i < NUM_BOOKCASE; i++) {
-    // collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, bookcase_loc[i], bookcase_size[i], collide[i]);
-  }
-  for (int i = 0; i < NUM_DOORS; i++) {
-    if (!open_door[i]) collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, door_loc[i], door_size[i], collide[i]);
-  }
-  for (int i = 0; i < NUM_GHOSTS; i++) {
-    collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, ghosts_loc[0], ghosts_size[0], g_die[0]);
-  }
-  for (int i = 0; i < NUM_ZOMBIES; i++) {
-    collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, zombies_loc[i], zombies_size[i], z_die[i]);
-  }
-  for (int i = 0; i < NUM_DOORS; i++) {
-    proximity(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, door_loc[i], door_size[i], doors[i]);
-  }
-  for (int i = 0; i < NUM_INTERACTABLES; i++) {
-    proximity(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, inter_loc[i], inter_size[i], proximal[i]);
-  }
-  for (int i = 0; i < NUM_PICKUPS; i++) {
-    proximity(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, pickup_loc[i], pickup_size[i], pickup[i]);
-  }
-
-  // collision(&enemy_loc[0].x, 0.0, &enemy_loc[0].z, GHOST_W, GHOST_H, GHOST_D, wall_loc, wall_size, collide, NUM_OBJECTS);
-  // collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, table_loc, table_size, collide, NUM_TABLES);
-
   cv = LookAt(-eye, -at, -up);
   glUniformMatrix4fv(camera_view, 1, GL_TRUE, cv);
-
-  hud();
 
   glFlush();
   glutSwapBuffers();
@@ -145,9 +156,9 @@ int main(int argc, char **argv) {
 
 void floor() {
   for (int i = 0; i < NUM_TILES; i++) {
-    for (int j = 0; j < NUM_TILES; j++) {
-      object(mv, model_view, -50.0 + (i * TILE_SIZE) + TILE_SIZE / 2, -2.5, -50.0 + (j * TILE_SIZE)  + TILE_SIZE / 2, FLOOR_W, FLOOR_H, FLOOR_D, FLOOR_R, FLOOR_G, FLOOR_B, 0, 0, 0, 0, 0, 0);
-    }
+    // for (int j = 0; j < NUM_TILES; j++) {
+      object(mv, model_view, -50.0 + (i * TILE_SIZE) + TILE_SIZE / 2, -2.5, -50.0  + (0 * TILE_SIZE) + TILE_SIZE * NUM_TILES / 2, FLOOR_W, FLOOR_H, FLOOR_D * NUM_TILES, FLOOR_R, FLOOR_G, FLOOR_B, 0, 0, 0, 0, 0, 0);
+    // }
   }
 }
 
@@ -194,16 +205,20 @@ void character() {
 void door() {
   for (int i = 0; i < NUM_DOORS; i++) {
     if (door_rot[i] == 0) {
+      if(i == 3) {
+        object(mv, model_view, door_loc[i].x - 2.5 + 2.5 * cos(door_open[i] * M_PI/180), door_vert, door_loc[i].z + 2.5 * sin(-door_open[i] * M_PI/180), DOOR_W, DOOR_H, DOOR_D, door_color.x, door_color.y, door_color.z, 0, door_rot[i] + door_open[i], 0, 0, 0, 0);
+      } else {
         object(mv, model_view, door_loc[i].x - 2.5 + 2.5 * cos(door_open[i] * M_PI/180), door_vert, door_loc[i].z + 2.5 * sin(-door_open[i] * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open[i], 0, 0, 0, 0);
+      }
     }
     if (door_rot[i] == 180) {
-        object(mv, model_view, door_loc[i].x + 2.5 - 2.5 * cos(door_open[i] * M_PI/180), door_vert, door_loc[i].z - 2.5 * sin(-door_open[i] * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open[i], 0, 0, 0, 0);
+      object(mv, model_view, door_loc[i].x + 2.5 - 2.5 * cos(door_open[i] * M_PI/180), door_vert, door_loc[i].z - 2.5 * sin(-door_open[i] * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open[i], 0, 0, 0, 0);
     }
     if (door_rot[i] == -90) {
-        object(mv, model_view, door_loc[i].x + 2.5 * sin(door_open[i] * M_PI/180), door_vert, door_loc[i].z - 2.5  + 2.5 * cos(-door_open[i] * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open[i], 0, 0, 0, 0);
+      object(mv, model_view, door_loc[i].x + 2.5 * sin(door_open[i] * M_PI/180), door_vert, door_loc[i].z - 2.5  + 2.5 * cos(-door_open[i] * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open[i], 0, 0, 0, 0);
     }
     if (door_rot[i] == 90) {
-        object(mv, model_view, door_loc[i].x - 2.5 * sin(door_open[i] * M_PI/180), door_vert, door_loc[i].z + 2.5 - 2.5 * cos(-door_open[i] * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open[i], 0, 0, 0, 0);
+      object(mv, model_view, door_loc[i].x - 2.5 * sin(door_open[i] * M_PI/180), door_vert, door_loc[i].z + 2.5 - 2.5 * cos(-door_open[i] * M_PI/180), DOOR_W, DOOR_H, DOOR_D, DOOR_R, DOOR_G, DOOR_B, 0, door_rot[i] + door_open[i], 0, 0, 0, 0);
     }
     object(mv, model_view, door_loc[i].x, 10.0, door_loc[i].z, DOOR_W, 5.0, DOOR_D, LON_WALL_R, LON_WALL_G, LON_WALL_B, 0, door_rot[i], 0, 0, 0, 0);
   }
@@ -312,10 +327,10 @@ void book() {
           bok2 = 0.0;
         }
         if (bookcase_rot[i] == 0) {
-          object(mv, model_view, bookcase_loc[i].x - (bookcase_size[i].x - 5) / 2 + (-0.5 * k) - bok2 + 5.0,      bookcase_loc[i].y + 5.0 + (-5.0 * j) - 0.6, bookcase_loc[i].z + 1.5, 0.5, bookcase_size[i].y/4, bookcase_size[i].z/2, morpher1(mt), morpher2(mt), morpher3(mt), 0, 0, 0, 0, 0, 0);
+          object(mv, model_view, bookcase_loc[i].x - (bookcase_size[i].x - 5) / 2 + (-0.5 * k) - bok2 + 5.0,      bookcase_loc[i].y + 5.0 + (-5.0 * j) - 0.6, bookcase_loc[i].z + 1.5, 0.5, bookcase_size[i].y/4, bookcase_size[i].z/2, book_colors[k].x, book_colors[k].y, book_colors[k].z, 0, 0, 0, 0, 0, 0);
         }
         if (bookcase_rot[i] == 180) {
-          object(mv, model_view, bookcase_loc[i].x + (bookcase_size[i].x - 5) / 2 + (-0.5 * k) + bok2,      bookcase_loc[i].y + 5.0 + (-5.0 * j) - 0.6, bookcase_loc[i].z - 1.5, 0.5, bookcase_size[i].y/4, bookcase_size[i].z/2, morpher1(mt), morpher2(mt), morpher3(mt), 0, 0, 0, 0, 0, 0);
+          object(mv, model_view, bookcase_loc[i].x + (bookcase_size[i].x - 5) / 2 + (-0.5 * k) + bok2,      bookcase_loc[i].y + 5.0 + (-5.0 * j) - 0.6, bookcase_loc[i].z - 1.5, 0.5, bookcase_size[i].y/4, bookcase_size[i].z/2, book_colors[k].x, book_colors[k].y, book_colors[k].z, 0, 0, 0, 0, 0, 0);
         }
       }
       if (bookcase_size[i].z == 10.0) {
@@ -326,10 +341,10 @@ void book() {
       }
       for (int k = 0; k < bok; k++) {
         if (bookcase_rot[i] == 90) {
-          object(mv, model_view, bookcase_loc[i].x + 1.5,                                             bookcase_loc[i].y + 5.0 + (-5.0 * j) - 0.6, bookcase_loc[i].z + (bookcase_size[i].z - 10)/2 + (-0.5 * k) + bok2, bookcase_size[i].x/2, bookcase_size[i].y/4, 0.5, morpher1(mt), morpher2(mt), morpher3(mt), 0, 0, 0, 0, 0, 0);
+          object(mv, model_view, bookcase_loc[i].x + 1.5, bookcase_loc[i].y + 5.0 + (-5.0 * j) - 0.6, bookcase_loc[i].z + (bookcase_size[i].z - 10)/2 + (-0.5 * k) + bok2, bookcase_size[i].x/2, bookcase_size[i].y/4, 0.5, book_colors[k].x, book_colors[k].y, book_colors[k].z, 0, 0, 0, 0, 0, 0);
         }
         if (bookcase_rot[i] == -90) {
-          object(mv, model_view, bookcase_loc[i].x - 1.5,                                             bookcase_loc[i].y + 5.0 + (-5.0 * j) - 0.6, bookcase_loc[i].z - (bookcase_size[i].z - 10)/2 + (0.5 * k) - bok2, bookcase_size[i].x/2, bookcase_size[i].y/4, 0.5, morpher1(mt), morpher2(mt), morpher3(mt), 0, 0, 0, 0, 0, 0);
+          object(mv, model_view, bookcase_loc[i].x - 1.5, bookcase_loc[i].y + 5.0 + (-5.0 * j) - 0.6, bookcase_loc[i].z - (bookcase_size[i].z - 10)/2 + (0.5 * k) - bok2, bookcase_size[i].x/2, bookcase_size[i].y/4, 0.5, book_colors[k].x, book_colors[k].y, book_colors[k].z, 0, 0, 0, 0, 0, 0);
         }
       }
     }
@@ -363,7 +378,7 @@ void agency() {
   object(mv, model_view, agency_loc.x + 0.0, agency_loc.y - 0.375, agency_loc.z + 0.5, APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
   object(mv, model_view, agency_loc.x + 0.0, agency_loc.y - 1.5, agency_loc.z - 0.25, APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
   object(mv, model_view, agency_loc.x + 0.0, agency_loc.y - 1.5, agency_loc.z + 0.25, APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
- }
+}
 
 void gun_pickup() {
   object(pv, model_view, table_loc[2].x + 0.0*0.2, table_loc[2].y + 0.0*0.2, table_loc[2].z + -1.0*0.2, BARREL_W*0.2, BARREL_H*0.2, BARREL_D*0.2, BARREL_R, BARREL_G, BARREL_B, 0, 0, 90, 0, 0, 0);
@@ -378,12 +393,19 @@ void gun() {
 
 void zombies() {
   for (int i = 0; i < NUM_ZOMBIES; i++) {
-    object(mv, model_view, zombies_loc[i].x + 0.0, zombie_height[0] + 0.5, zombies_loc[i].z + 0.0, zombies_size[i].x*.75, zombies_size[i].y*.75, zombies_size[i].z*.75, ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 45, 0, 45, 0, 0, 0); // translate down half of the object
-    object(mv, model_view, zombies_loc[i].x + 0.0, zombie_height[1] + 0.0, zombies_loc[i].z + 0.0, zombies_size[i].x*1, zombies_size[i].y*1, zombies_size[i].z*1, ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
-    object(mv, model_view, zombies_loc[i].x + 1.0, zombie_height[2] + 0.0, zombies_loc[i].z + 0.0, zombies_size[i].x/2, zombies_size[i].y, zombies_size[i].z/2, ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
-    object(mv, model_view, zombies_loc[i].x - 1.0, zombie_height[3] + 0.0, zombies_loc[i].z + 0.0, zombies_size[i].x/2, zombies_size[i].y, zombies_size[i].z/2, ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
-    object(mv, model_view, zombies_loc[i].x + 0.5, zombie_height[4] - 1.0, zombies_loc[i].z + 0.0, zombies_size[i].x/2, zombies_size[i].y, zombies_size[i].z/2, ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
-    object(mv, model_view, zombies_loc[i].x - 0.5, zombie_height[5] - 1.0, zombies_loc[i].z + 0.0, zombies_size[i].x/2, zombies_size[i].y, zombies_size[i].z/2, ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.0, agency_loc.y + 1.15, zombies_loc[i].z + 0.0, HAIR_W*zombie_mult[i], HAIR_H*zombie_mult[i], HAIR_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.0, agency_loc.y + 0.75, zombies_loc[i].z + 0.0, FACE_W*zombie_mult[i], FACE_H*zombie_mult[i], FACE_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.3, agency_loc.y + 0.75, zombies_loc[i].z - 0.175, LENS_W*zombie_mult[i], LENS_H*zombie_mult[i], LENS_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.3, agency_loc.y + 0.75, zombies_loc[i].z + 0.175, LENS_W*zombie_mult[i], LENS_H*zombie_mult[i], LENS_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.4, agency_loc.y + 0.875, zombies_loc[i].z + 0.0, BRIDGE_W*zombie_mult[i], BRIDGE_H*zombie_mult[i], BRIDGE_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.0, agency_loc.y - 0.25, zombies_loc[i].z + 0.0, SHIRT_W*zombie_mult[i], SHIRT_H*zombie_mult[i], SHIRT_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.0, agency_loc.y - 0.25, zombies_loc[i].z - 0.375, SUIT_W*zombie_mult[i], SUIT_H*zombie_mult[i], SUIT_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.0, agency_loc.y - 0.25, zombies_loc[i].z + 0.375, SUIT_W*zombie_mult[i], SUIT_H*zombie_mult[i], SUIT_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.25, agency_loc.y - 0.125, zombies_loc[i].z + 0.0, TIE_W*zombie_mult[i], TIE_H*zombie_mult[i], TIE_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.0, agency_loc.y - 0.375, zombies_loc[i].z - 0.5, APPENDAGE_W*zombie_mult[i], APPENDAGE_H*zombie_mult[i], APPENDAGE_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.0, agency_loc.y - 0.375, zombies_loc[i].z + 0.5, APPENDAGE_W*zombie_mult[i], APPENDAGE_H*zombie_mult[i], APPENDAGE_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.0, agency_loc.y - 1.5, zombies_loc[i].z - 0.25, APPENDAGE_W*zombie_mult[i], APPENDAGE_H*zombie_mult[i], APPENDAGE_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
+    object(mv, model_view, zombies_loc[i].x + 0.0, agency_loc.y - 1.5, zombies_loc[i].z + 0.25, APPENDAGE_W*zombie_mult[i], APPENDAGE_H*zombie_mult[i], APPENDAGE_D*zombie_mult[i], ZOMBIE_R, ZOMBIE_G, ZOMBIE_B, 0, 0, 0, 0, 0, 0); // translate down half of the object
   }
 }
 
@@ -404,12 +426,12 @@ void set_objects() {
   wall_loc[4] = vec3(-7.5, wall_height, 40.0);
   wall_loc[5] = vec3(45.0, wall_height, 40.0);
   wall_loc[6] = vec3(25.0, wall_height, 20.0);
-  wall_loc[7] = vec3(-5.0, wall_height, 0.0);
+  wall_loc[7] = vec3(4.375, wall_height, 0.0);
   wall_loc[8] = vec3(-45.0, wall_height, 0.0);
   wall_loc[9] = vec3(45.0, wall_height, -25.0);
   wall_loc[10] = vec3(25.0, wall_height, -25.0);
   wall_loc[11] = vec3(5.0, wall_height, -25.0);
-  wall_loc[12] = vec3(-25.0, wall_height, 0.0);
+  wall_loc[12] = vec3(-25.0, wall_height, -13.75);
   wall_loc[13] = vec3(-25.0, wall_height, -47.5);
   wall_loc[14] = vec3(25.0, wall_height, 36.25);
   wall_loc[15] = vec3(25.0, wall_height, 20.0);
@@ -440,6 +462,13 @@ void set_objects() {
   wall_loc[36] = vec3(-25.0, wall_height, 50.0);
   wall_loc[37] = vec3(-45.0, wall_height, 50.0);
 
+  wall_loc[38] = vec3(-12.5, wall_height, 13.75);
+  wall_loc[39] = vec3(-12.5, wall_height, 36.25);
+  wall_loc[40] = vec3(-18.75, wall_height, 10.0);
+  wall_loc[41] = vec3(-18.75, wall_height, 20.0);
+  wall_loc[42] = vec3(-25.0, wall_height, 28.75);
+  wall_loc[43] = vec3(-28.125, wall_height, 0.0);
+
   door_loc[0] = vec3(-37.5, 0.0, 0.0);
   door_loc[1] = vec3(-25.0, 0.0, -42.5);
   door_loc[2] = vec3(0.0, 0.0, -12.5);
@@ -448,6 +477,9 @@ void set_objects() {
   door_loc[5] = vec3(25.0, 0.0, 10.0);
   door_loc[6] = vec3(25.0, 0.0, 30.0);
   door_loc[7] = vec3(37.5, 0.0, 40.0);
+  door_loc[8] = vec3(-25.0, 0.0, 15.0);
+  door_loc[9] = vec3(-18.75, 0.0, 0.0);
+  door_loc[10] = vec3(-12.5, 0.0, 30.0);
 
   door_rot[0] = 0;
   door_rot[1] = -90;
@@ -457,6 +489,9 @@ void set_objects() {
   door_rot[5] = 90;
   door_rot[6] = -90;
   door_rot[7] = 180;
+  door_rot[8] = -90;
+  door_rot[9] = 180;
+  door_rot[10] = 90;
 
   door_dir[0] = north;
   door_dir[1] = east;
@@ -469,7 +504,7 @@ void set_objects() {
 
   table_loc[0] = vec3(20.0, 0.0, -30.0);
   table_loc[1] = vec3(30.0, 0.0, -30.0);
-  table_loc[2] = vec3(-20.0, 0.0, 10.0);
+  table_loc[2] = vec3(-7.5, 0.0, 10.0);
   table_loc[3] = vec3(45.0, 0.0, 45.0);
 
   bookcase_loc[0] = vec3(2.5, wall_height, -37.5);
@@ -529,12 +564,12 @@ void set_objects() {
   wall_size[4] = vec3(85.0, LAT_WALL_H, LAT_WALL_D);
   wall_size[5] = vec3(10.0, LAT_WALL_H, LAT_WALL_D);
   wall_size[6] = vec3(50.0, LAT_WALL_H, LAT_WALL_D);
-  wall_size[7] = vec3(60.0, LAT_WALL_H, LAT_WALL_D);
+  wall_size[7] = vec3(41.25, LAT_WALL_H, LAT_WALL_D);
   wall_size[8] = vec3(10.0, LAT_WALL_H, LAT_WALL_D);
   wall_size[9] = vec3(10.0, LAT_WALL_H, LAT_WALL_D);
   wall_size[10] = vec3(20.0, LAT_WALL_H, LAT_WALL_D);
   wall_size[11] = vec3(10.0, LAT_WALL_H, LAT_WALL_D);
-  wall_size[12] = vec3(LON_WALL_W, LON_WALL_H, 80.0);
+  wall_size[12] = vec3(LON_WALL_W, LON_WALL_H, 52.5);
   wall_size[13] = vec3(LON_WALL_W, LON_WALL_H, 5.0);
   wall_size[14] = vec3(LON_WALL_W, LON_WALL_H, 7.5);
   wall_size[15] = vec3(LON_WALL_W, LON_WALL_H, 15.0);
@@ -565,6 +600,13 @@ void set_objects() {
   wall_size[35] = vec3(10.0, LAT_WALL_H*6/8+0.2, LAT_WALL_D);
   wall_size[37] = vec3(10.0, LAT_WALL_H*6/8+0.2, LAT_WALL_D);
 
+  wall_size[38] = vec3(LON_WALL_W, LON_WALL_H, 27.5);
+  wall_size[39] = vec3(LON_WALL_W, LON_WALL_H, 7.5);
+  wall_size[40] = vec3(12.5, LAT_WALL_H, LAT_WALL_D);
+  wall_size[41] = vec3(12.5, LAT_WALL_H, LAT_WALL_D);
+  wall_size[42] = vec3(LON_WALL_W, LON_WALL_H, 22.5);
+  wall_size[43] = vec3(13.75, LAT_WALL_H, LAT_WALL_D);
+
   door_size[0] = vec3(DOOR_W, DOOR_H, DOOR_B);
   door_size[1] = vec3(DOOR_B, DOOR_H, DOOR_W);
   door_size[2] = vec3(DOOR_B, DOOR_H, DOOR_W);
@@ -573,6 +615,9 @@ void set_objects() {
   door_size[5] = vec3(DOOR_B, DOOR_H, DOOR_W);
   door_size[6] = vec3(DOOR_B, DOOR_H, DOOR_W);
   door_size[7] = vec3(DOOR_W, DOOR_H, DOOR_B);
+  door_size[8] = vec3(DOOR_W, DOOR_H, DOOR_B);
+  door_size[9] = vec3(DOOR_W, DOOR_H, DOOR_B);
+  door_size[10] = vec3(DOOR_W, DOOR_H, DOOR_B);
 
   bookcase_size[0] = vec3(BOOKCASELZ_W, BOOKCASELZ_H, BOOKCASELZ_D);
   bookcase_size[1] = vec3(BOOKCASELZ_W, BOOKCASELZ_H, BOOKCASELZ_D);

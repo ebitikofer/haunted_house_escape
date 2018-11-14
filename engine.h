@@ -21,8 +21,8 @@
 #define RATE_CAMERA_H	4
 #define RATE_CAMERA_V	2
 
-#define NUM_OBJECTS	38
-#define NUM_DOORS	8
+#define NUM_OBJECTS	44
+#define NUM_DOORS	11
 #define NUM_BOOKCASE	10
 #define NUM_ENEMIES	4
 #define NUM_GHOSTS	1
@@ -116,6 +116,8 @@ GLfloat f = 0.0;
 GLfloat b = 0.0;
 
 float red = 0.0, green = 0.5, blue = 1.0, color_a_pink = 0.0;
+
+vec3 book_colors[30] = { vec3(0.0, 0.0, 0.0) };
 
 // Title bar modifiers
 std::string title_bar;
@@ -377,30 +379,30 @@ void object(mat4 matrix, GLuint uniform, GLfloat x, GLfloat y, GLfloat z, GLfloa
 
 }
 
-void collision(GLfloat *x, GLfloat y, GLfloat *z, GLfloat w, GLfloat h, GLfloat d, vec3 loc, vec3 size, bool &result) {
-  if (*x - w / 2 < loc.x + size.x / 2 &&
-      *x + w / 2 > loc.x - size.x / 2 &&
-      *z - d / 2 < loc.z + size.z / 2 &&
-      *z + d / 2 > loc.z - size.z / 2 ) {
+void collision(GLfloat &x, GLfloat y, GLfloat &z, GLfloat w, GLfloat h, GLfloat d, vec3 loc, vec3 size, bool &result) {
+  if (x - w / 2 < loc.x + size.x / 2 &&
+      x + w / 2 > loc.x - size.x / 2 &&
+      z - d / 2 < loc.z + size.z / 2 &&
+      z + d / 2 > loc.z - size.z / 2 ) {
     result = true;
-    l = (loc.x + size.x / 2) - (*x - w / 2);
-    r = (*x + w / 2) - (loc.x - size.x / 2);
-    f = (loc.z + size.z / 2) - (*z - d / 2);
-    b = (*z + d / 2) - (loc.z - size.z / 2);
-    if (l < f && l < b && l < r) { *x += l; }
-    else if (r < f && r < b && r < l) { *x -= r; }
-    else if (f < b && f < l && f < r) { *z += f; }
-    else if (b < f && b < l && b < r) { *z -= b; }
+    l = (loc.x + size.x / 2) - (x - w / 2);
+    r = (x + w / 2) - (loc.x - size.x / 2);
+    f = (loc.z + size.z / 2) - (z - d / 2);
+    b = (z + d / 2) - (loc.z - size.z / 2);
+    if (l < f && l < b && l < r) { x += l; }
+    else if (r < f && r < b && r < l) { x -= r; }
+    else if (f < b && f < l && f < r) { z += f; }
+    else if (b < f && b < l && b < r) { z -= b; }
   } else {
     result = false;
   }
 }
 
-void proximity(GLfloat *x, GLfloat y, GLfloat *z, GLfloat w, GLfloat h, GLfloat d, vec3 loc, vec3 size, bool &result) {
-  if (*x - w / 2 < loc.x + size.x + 2.0 / 2 &&
-      *x + w / 2 > loc.x - size.x - 2.0 / 2 &&
-      *z - d / 2 < loc.z + size.z + 2.0 / 2 &&
-      *z + d / 2 > loc.z - size.z - 2.0 / 2 ) {
+void proximity(GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLfloat h, GLfloat d, vec3 loc, vec3 size, bool &result) {
+  if (x - w / 2 < loc.x + size.x + 2.6 / 2 &&
+      x + w / 2 > loc.x - size.x - 2.6 / 2 &&
+      z - d / 2 < loc.z + size.z + 2.6 / 2 &&
+      z + d / 2 > loc.z - size.z - 2.6 / 2 ) {
     result = true;
   } else {
     result = false;
@@ -478,6 +480,10 @@ void init(int argc, char **argv) {
   cube();
 
   tetrahedron(NumTimesToSubdivide);
+
+  for (int i = 0; i < 30; i++) {
+    book_colors[i] = vec3(morpher1(mt), morpher2(mt), morpher3(mt));
+  }
 
   // Drawables(solid_part);
 

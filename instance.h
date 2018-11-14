@@ -8,6 +8,8 @@
 #define RATE_PLAYER	  0.5
 #define RATE_GUN	    1
 
+#define NUM_ZOMBIES	3
+
 // Game object locations
 vec3 player = vec3(0.0, 0.0, 6.0);
 
@@ -32,7 +34,7 @@ GLfloat wall_height = 5.0,
         bookcase_z = -45.0,
         dizziness = 0.0,
         nausea = 0.0,
-        zombie_mult[NUM_ZOMBIES] = { 1.0 },
+        zombie_mult[NUM_ZOMBIES] = { 1.0, 1.0, 1.0 },
         door_height = 27.5,
         speed_boost = 1.0;
 
@@ -44,11 +46,13 @@ vec3 zombie_loc[NUM_ZOMBIES] = {
 
 vec3 agency_loc = vec3(-51.0, 0.0, 10.0),
      ghost_loc = vec3(-17.5, ghost_height[0], -5.0),
-     picture_loc = vec3(12.5, 0.0, -1.0);
+     picture_loc = vec3(12.5, 0.0, -1.0),
+     door_color = vec3(0.7, 0.6, 0.5);
 
 int picture_rot = 225, flicker = 0, door_open[NUM_DOORS] = { 0 };
 
-bool toggle = true,
+bool debug = false,
+     toggle = true,
      draw_table = false,
      door_collide = true,
      open_door[NUM_DOORS] = { false },
@@ -79,8 +83,8 @@ vec4 bounds[NUM_ROOMS] = {
   vec4(25.0, 0.0, 0.0, -25.0),
   vec4(25.0, 0.0, -25.0, -50.0),
   vec4(50.0, 25.0, -25.0, -50.0),
-  vec4(50.0, 25.0, 25.0, -25.0),
-  vec4(25.0, -25.0, 40.0, 0.0),
+  vec4(50.0, 25.0, 20.0, -25.0),
+  vec4(25.0, -12.5, 40.0, 0.0),
   vec4(50.0, 25.0, 40.0, 25.0),
   vec4(50.0, -50.0, 50.0, 40.0)
 };
@@ -151,6 +155,11 @@ void animation(void) {
         open_door[0] = true;
       }
     }
+    if (doors[8]){
+      if (action) {
+        open_door[8] = true;
+      }
+    }
   } else { }
 
   if (rooms[1]) {
@@ -171,6 +180,11 @@ void animation(void) {
         open_door[2] = true;
       }
     }
+    if (doors[9]){
+      if (action) {
+        open_door[9] = true;
+      }
+    }
   }
   else { ghost_chase = false; }
 
@@ -180,16 +194,20 @@ void animation(void) {
         fix_picture = true;
       }
     }
-    if (doors[3]){
-      if (action) {
-        open_door[3] = true;
-      }
-    }
+    // if (doors[3]){
+    //   if (action) {
+    //     open_door[3] = true;
+    //   }
+    // }
   } else {
     lose_power = false;
   }
 
   if (rooms[4]) {
+    light1 = true;
+    glUniform1i(Light1,light1);
+    light2 = true;
+    glUniform1i(Light2,light2);
     agency_loc = vec3(12.5, 0.0, -51.0);
     if (proximal[3]){
       if (action) {
@@ -206,7 +224,9 @@ void animation(void) {
     }
     if (doors[4]){
       if (action) {
-        open_door[4] = true;
+        if (get_key) {
+          open_door[4] = true;
+        }
       }
     }
   } else { }
@@ -239,6 +259,11 @@ void animation(void) {
     if (doors[6]){
       if (action) {
         open_door[6] = true;
+      }
+    }
+    if (doors[10]){
+      if (action) {
+        open_door[10] = true;
       }
     }
   }
@@ -279,7 +304,9 @@ void animation(void) {
 
       if (lose_power && flicker >= 7 && flicker < 15) {
         flicker++;
-        agency_loc = vec3(12.5, 0.0, -12.5);
+        // agency_loc = vec3(12.5, 0.0, -12.5);
+        door_color = vec3(0.25, 0.15, 0.05);
+        open_door[3] = true;
       }
 
       if (lose_power && flicker >= 15) {
@@ -405,21 +432,21 @@ void animation(void) {
   }
 
   if (zombie_chase) {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < NUM_ZOMBIES; i++) {
       if (zombie_loc[i].x != mvx) {
         if (zombie_loc[i].x - mvx < 0) {
-          zombie_loc[i].x += 0.1;
+          zombie_loc[i].x += (i + 1) * 0.05;
         }
         if (zombie_loc[i].x - mvx > 0) {
-          zombie_loc[i].x -= 0.1;
+          zombie_loc[i].x -= (i + 1) * 0.05;
         }
       }
       if (zombie_loc[i].z != mvz) {
         if (zombie_loc[i].z - mvz < 0) {
-          zombie_loc[i].z += 0.1;
+          zombie_loc[i].z += (i + 1) * 0.05;
         }
         if (zombie_loc[i].z - mvz > 0) {
-          zombie_loc[i].z -= 0.1;
+          zombie_loc[i].z -= (i + 1) * 0.05;
         }
       }
     }
@@ -449,7 +476,7 @@ void animation(void) {
     speed_boost = 2.0;
   }
 
-  title_bar = "Score: " + std::to_string(theta) + " Darts: " + std::to_string(phi) + " bool: " + std::to_string(0.01 * (time - lasttime)); // + " l:" + std::to_string(l) + " r:" + std::to_string(r) + " f:" + std::to_string(f) + " b:" + std::to_string(b);
+  title_bar = "Score: " + std::to_string(mvx) + " Darts: " + std::to_string(mvz) + " bool: " + std::to_string(0.01 * (time - lasttime)); // + " l:" + std::to_string(l) + " r:" + std::to_string(r) + " f:" + std::to_string(f) + " b:" + std::to_string(b);
 
   if (mouse_button == 3 && changed) { fovy -= 5.0; changed = false; } else if (mouse_button == 4 && changed) { fovy += 5.0; changed = false; }
 
@@ -480,7 +507,7 @@ void animation(void) {
         case 'v': fovy -= 5; if (fovy < 0) { fovy = 1; } break;
         case 'V': fovy += 5; /* break; */ if (fovy > 179) { fovy = 179; } break;
         case '~': zNear = 0.1; zFar = 300.0; radius = 3.0; theta = 0.0; phi = 0.0; break; // reset
-        case '`': { } break;
+        case '`': if (toggle) { debug = !debug; toggle = false; } break;
         default: { } break; // Default
 
       }
@@ -489,6 +516,7 @@ void animation(void) {
         // case ' ': fire_gun = false; break; // Stop firing, not the same as bullet landing
         case 'f': { action = false; } break; //wire
         case 'c': { toggle = true; } break; //fire
+        case '`': { toggle = true; } break; //fire
       }
     }
 
