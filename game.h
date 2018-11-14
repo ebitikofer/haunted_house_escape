@@ -40,6 +40,10 @@ int door_rot[NUM_DOORS] = { 0 };
 
 vec3 bookcase_loc[NUM_BOOKCASE] = { vec3(0.0, 0.0, 0.0) };
 
+int bookcase_rot[NUM_BOOKCASE] = { 0 };
+
+int bookcase_pos[NUM_BOOKCASE] = { 0 };
+
 vec3 table_loc[NUM_TABLES] = { vec3(0.0, 0.0, 0.0) };
 
 vec3 ghosts_loc[NUM_GHOSTS] = { vec3(0.0, 0.0, 0.0) };

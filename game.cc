@@ -92,7 +92,7 @@ void display(void) {
     collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, wall_loc[i], wall_size[i], collide[i]);
   }
   for (int i = 0; i < NUM_BOOKCASE; i++) {
-    collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, bookcase_loc[i], bookcase_size[i], collide[i]);
+    // collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, bookcase_loc[i], bookcase_size[i], collide[i]);
   }
   for (int i = 0; i < NUM_DOORS; i++) {
     if (!open_door[i]) collision(&mvx, 0.0, &mvz, PLAYER_W, PLAYER_H, PLAYER_D, door_loc[i], door_size[i], collide[i]);
@@ -289,12 +289,51 @@ void light() { ;
 
 void bookcase() {
   for (int i = 0; i < NUM_BOOKCASE; i++) {
-    object(mv, model_view, bookcase_loc[i].x, bookcase_loc[i].y, bookcase_loc[i].z, bookcase_size[i].x, bookcase_size[i].y, bookcase_size[i].z, BOOKCASE_R, BOOKCASE_G, BOOKCASE_B, 0, 0, 0, 0, 0, 0);
+    object(mv, model_view, bookcase_loc[i].x, bookcase_loc[i].y - bookcase_size[i].y/2, bookcase_loc[i].z, bookcase_size[i].x, 0.5, bookcase_size[i].z, BOOKCASE_R, BOOKCASE_G, BOOKCASE_B, 0, 0, 0, 0, 0, 0);
+    object(mv, model_view, bookcase_loc[i].x, bookcase_loc[i].y + bookcase_size[i].y/2, bookcase_loc[i].z, bookcase_size[i].x, 0.5, bookcase_size[i].z, BOOKCASE_R, BOOKCASE_G, BOOKCASE_B, 0, 0, 0, 0, 0, 0);
+    object(mv, model_view, bookcase_loc[i].x, bookcase_loc[i].y - bookcase_size[i].y*1/6, bookcase_loc[i].z, bookcase_size[i].x, 0.5, bookcase_size[i].z, BOOKCASE_R, BOOKCASE_G, BOOKCASE_B, 0, 0, 0, 0, 0, 0);
+    object(mv, model_view, bookcase_loc[i].x, bookcase_loc[i].y + bookcase_size[i].y*1/6, bookcase_loc[i].z, bookcase_size[i].x, 0.5, bookcase_size[i].z, BOOKCASE_R, BOOKCASE_G, BOOKCASE_B, 0, 0, 0, 0, 0, 0);
+    // object(mv, model_view, bookcase_loc[i].x, bookcase_loc[i].y, bookcase_loc[i].z, bookcase_size[i].x, bookcase_size[i].y, bookcase_size[i].z, BOOKCASE_R, BOOKCASE_G, BOOKCASE_B, 0, 0, 0, 0, 0, 0);
+    // object(mv, model_view, bookcase_loc[i].x, bookcase_loc[i].y, bookcase_loc[i].z, bookcase_size[i].x, bookcase_size[i].y, bookcase_size[i].z, BOOKCASE_R, BOOKCASE_G, BOOKCASE_B, 0, 0, 0, 0, 0, 0);
   }
 }
 
 void book() {
-  object(mv, model_view, bookcase_loc[0].x + 1.5, bookcase_loc[0].y, bookcase_loc[0].z, bookcase_size[0].x/2, bookcase_size[0].y/5, 0.5, 1.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
+  int bok = 0;
+  float bok2 = 0.0;
+  for (int i = 0; i < NUM_BOOKCASE; i++) {
+    for (int j = 0; j < 3; j++) {
+      for (int k = 0; k < 10; k++) {
+        if (bookcase_pos[i] == 0) {
+          bok2 = -2.5;
+        } else if (bookcase_pos[i] == 1) {
+          bok2 = 2.5;
+        } else if (bookcase_pos[i] == 2) {
+          bok2 = 0.0;
+        }
+        if (bookcase_rot[i] == 0) {
+          object(mv, model_view, bookcase_loc[i].x - (bookcase_size[i].x - 5) / 2 + (-0.5 * k) - bok2 + 5.0,      bookcase_loc[i].y + 5.0 + (-5.0 * j) - 0.6, bookcase_loc[i].z + 1.5, 0.5, bookcase_size[i].y/4, bookcase_size[i].z/2, morpher1(mt), morpher2(mt), morpher3(mt), 0, 0, 0, 0, 0, 0);
+        }
+        if (bookcase_rot[i] == 180) {
+          object(mv, model_view, bookcase_loc[i].x + (bookcase_size[i].x - 5) / 2 + (-0.5 * k) + bok2,      bookcase_loc[i].y + 5.0 + (-5.0 * j) - 0.6, bookcase_loc[i].z - 1.5, 0.5, bookcase_size[i].y/4, bookcase_size[i].z/2, morpher1(mt), morpher2(mt), morpher3(mt), 0, 0, 0, 0, 0, 0);
+        }
+      }
+      if (bookcase_size[i].z == 10.0) {
+        bok = 10;
+        bok2 += 2.5;
+      } else {
+        bok = 30;
+      }
+      for (int k = 0; k < bok; k++) {
+        if (bookcase_rot[i] == 90) {
+          object(mv, model_view, bookcase_loc[i].x + 1.5,                                             bookcase_loc[i].y + 5.0 + (-5.0 * j) - 0.6, bookcase_loc[i].z + (bookcase_size[i].z - 10)/2 + (-0.5 * k) + bok2, bookcase_size[i].x/2, bookcase_size[i].y/4, 0.5, morpher1(mt), morpher2(mt), morpher3(mt), 0, 0, 0, 0, 0, 0);
+        }
+        if (bookcase_rot[i] == -90) {
+          object(mv, model_view, bookcase_loc[i].x - 1.5,                                             bookcase_loc[i].y + 5.0 + (-5.0 * j) - 0.6, bookcase_loc[i].z - (bookcase_size[i].z - 10)/2 + (0.5 * k) - bok2, bookcase_size[i].x/2, bookcase_size[i].y/4, 0.5, morpher1(mt), morpher2(mt), morpher3(mt), 0, 0, 0, 0, 0, 0);
+        }
+      }
+    }
+  }
 }
 
 void key() {
@@ -443,6 +482,28 @@ void set_objects() {
   bookcase_loc[7] = vec3(bookcase_x[0], wall_height, -47.5);
   bookcase_loc[8] = vec3(bookcase_x[1], wall_height, -47.5);
   bookcase_loc[9] = vec3(45.0, wall_height, -47.5);
+
+  bookcase_rot[0] = 90;
+  bookcase_rot[1] = -90;
+  bookcase_rot[2] = -90;
+  bookcase_rot[3] = 90;
+  bookcase_rot[4] = 180;
+  bookcase_rot[5] = 180;
+  bookcase_rot[6] = 0;
+  bookcase_rot[7] = 0;
+  bookcase_rot[8] = 0;
+  bookcase_rot[9] = 0;
+
+  bookcase_pos[0] = 2;
+  bookcase_pos[1] = 2;
+  bookcase_pos[2] = 0;
+  bookcase_pos[3] = 1;
+  bookcase_pos[4] = 1;
+  bookcase_pos[5] = 0;
+  bookcase_pos[6] = 0;
+  bookcase_pos[7] = 1;
+  bookcase_pos[8] = 0;
+  bookcase_pos[9] = 1;
 
   ghosts_loc[0] = vec3(ghost_loc.x*ghost_mult, ghost_height[0]*ghost_mult, ghost_loc.z*ghost_mult);
 

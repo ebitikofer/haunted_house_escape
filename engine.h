@@ -139,9 +139,9 @@ std::mt19937 mt(ss);
 std::uniform_real_distribution<double> dist_x(-7.0, 7.0);
 std::uniform_real_distribution<double> dist_z(-10.0, -6.0);
 std::uniform_real_distribution<double> sickness(0.0, 0.005);
-std::uniform_real_distribution<double> morpher1(0.0, 0.5);
-std::uniform_real_distribution<double> morpher2(0.0, 0.5);
-// std::uniform_real_distribution<double> morpher3();
+std::uniform_real_distribution<double> morpher1(0.25, 0.75);
+std::uniform_real_distribution<double> morpher2(0.25, 0.75);
+std::uniform_real_distribution<double> morpher3(0.25, 0.75);
 // Position of light1
 point4 light_position(-65.0,  30.0, -55.0, 1.0);
 // If you want a non-positional light use 0.0 for fourth value
