@@ -72,10 +72,9 @@ mat4 p, mv, cv, pv;   // shader variables
 vec4 cc;
 
 // Globals to control moving around a scene.
-GLfloat mvx = -37.5; // Start in furthest room
-GLfloat mvz = 30.0;
-// GLfloat mvx = -50.0; // Start at door
-// GLfloat mvz = 45.0;
+vec3 mv_pos = vec3(-37.5, 0.0, 30.0);
+vec3 mv_vel = vec3(0.0, 0.0, 0.0);
+// vec3(-50.0, 0.0, 45.0); // Start at door
 
 // Projection transformation parameters
 GLfloat fovy = 70.0;  // Field-of-view in Y direction angle (in degrees)

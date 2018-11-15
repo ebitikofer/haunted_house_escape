@@ -55,6 +55,8 @@ bool debug = false,
      toggle = true,
      draw_table = false,
      door_collide = true,
+     jump = false,
+     fall = false,
      open_door[NUM_DOORS] = { false },
      werewolf_chase = false,
      ghost_chase = false,
@@ -125,7 +127,12 @@ void animation(void) {
   static GLint lasttime = glutGet(GLUT_ELAPSED_TIME);
   GLint time = glutGet(GLUT_ELAPSED_TIME);
 
-  set_room(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D);
+  // mv_vel = vec3(0.0, 0.0, 0.0);
+  mv_vel.x = 0.0;
+  mv_vel.z = 0.0;
+
+
+  set_room(mv_pos.x, 0.0, mv_pos.z, PLAYER_W, PLAYER_H, PLAYER_D);
 
   // if (rotatep) move_angle += 20.0 / 1000.0 * (time - lasttime);
 
@@ -346,10 +353,10 @@ void animation(void) {
     dart_x = 0.0;
   }
 
-  // if (mvz >= DRAW_DISTANCE) { mvz = -DRAW_DISTANCE; regen = true; }
-  // if (mvz < -DRAW_DISTANCE) { mvz =  DRAW_DISTANCE; regen = true; }
-  // if (mvx >= DRAW_DISTANCE) { mvx = -DRAW_DISTANCE; regen = true; }
-  // if (mvx < -DRAW_DISTANCE) { mvx =  DRAW_DISTANCE; regen = true; }
+  // if (mv_vel.z >= DRAW_DISTANCE) { mv_vel.z = -DRAW_DISTANCE; regen = true; }
+  // if (mv_vel.z < -DRAW_DISTANCE) { mv_vel.z =  DRAW_DISTANCE; regen = true; }
+  // if (mv_vel.x >= DRAW_DISTANCE) { mv_vel.x = -DRAW_DISTANCE; regen = true; }
+  // if (mv_vel.x < -DRAW_DISTANCE) { mv_vel.x =  DRAW_DISTANCE; regen = true; }
 
   if (health == 0) exit(EXIT_SUCCESS);
 
@@ -360,19 +367,19 @@ void animation(void) {
   }
 
   if (ghost_chase) {
-    if (ghost_loc.x != mvx) {
-      if (ghost_loc.x - mvx < 0) {
+    if (ghost_loc.x != mv_pos.x) {
+      if (ghost_loc.x - mv_pos.x < 0) {
         ghost_loc.x += 0.1;
       }
-      if (ghost_loc.x - mvx > 0) {
+      if (ghost_loc.x - mv_pos.x > 0) {
         ghost_loc.x -= 0.1;
       }
     }
-    if (ghost_loc.z != mvz) {
-      if (ghost_loc.z - mvz < 0) {
+    if (ghost_loc.z != mv_pos.z) {
+      if (ghost_loc.z - mv_pos.z < 0) {
         ghost_loc.z += 0.1;
       }
-      if (ghost_loc.z - mvz > 0) {
+      if (ghost_loc.z - mv_pos.z > 0) {
         ghost_loc.z -= 0.1;
       }
     }
@@ -413,19 +420,19 @@ void animation(void) {
   }
 
   if (agency_chase) {
-    if (agency_loc.x != mvx) {
-      if (agency_loc.x - mvx < 0) {
+    if (agency_loc.x != mv_pos.x) {
+      if (agency_loc.x - mv_pos.x < 0) {
         agency_loc.x += 0.1;
       }
-      if (agency_loc.x - mvx > 0) {
+      if (agency_loc.x - mv_pos.x > 0) {
         agency_loc.x -= 0.1;
       }
     }
-    if (agency_loc.z != mvz) {
-      if (agency_loc.z - mvz < 0) {
+    if (agency_loc.z != mv_pos.z) {
+      if (agency_loc.z - mv_pos.z < 0) {
         agency_loc.z += 0.1;
       }
-      if (agency_loc.z - mvz > 0) {
+      if (agency_loc.z - mv_pos.z > 0) {
         agency_loc.z -= 0.1;
       }
     }
@@ -433,19 +440,19 @@ void animation(void) {
 
   if (zombie_chase) {
     for (int i = 0; i < NUM_ZOMBIES; i++) {
-      if (zombie_loc[i].x != mvx) {
-        if (zombie_loc[i].x - mvx < 0) {
+      if (zombie_loc[i].x != mv_pos.x) {
+        if (zombie_loc[i].x - mv_pos.x < 0) {
           zombie_loc[i].x += (i + 1) * 0.05;
         }
-        if (zombie_loc[i].x - mvx > 0) {
+        if (zombie_loc[i].x - mv_pos.x > 0) {
           zombie_loc[i].x -= (i + 1) * 0.05;
         }
       }
-      if (zombie_loc[i].z != mvz) {
-        if (zombie_loc[i].z - mvz < 0) {
+      if (zombie_loc[i].z != mv_pos.z) {
+        if (zombie_loc[i].z - mv_pos.z < 0) {
           zombie_loc[i].z += (i + 1) * 0.05;
         }
-        if (zombie_loc[i].z - mvz > 0) {
+        if (zombie_loc[i].z - mv_pos.z > 0) {
           zombie_loc[i].z -= (i + 1) * 0.05;
         }
       }
@@ -476,7 +483,25 @@ void animation(void) {
     speed_boost = 2.0;
   }
 
-  title_bar = "Score: " + std::to_string(mvx) + " Darts: " + std::to_string(mvz) + " bool: " + std::to_string(0.01 * (time - lasttime)); // + " l:" + std::to_string(l) + " r:" + std::to_string(r) + " f:" + std::to_string(f) + " b:" + std::to_string(b);
+  if (!fall) {
+    mv_vel.y = 0.0;
+    // mv_pos.y = 0.0;
+  }
+
+  if (jump) {
+    mv_vel.y += 0.75;
+    jump = false;
+    fall = true;
+  }
+
+  if (mv_pos.y > 0.0) {
+    mv_vel.y -= .015;
+  } else {
+    mv_pos.y = 0.0;
+    fall = false;
+  }
+
+  title_bar = "Score: " + std::to_string(mv_pos.x) + " Darts: " + std::to_string(mv_pos.y) + " bool: " + std::to_string(0.01 * (time - lasttime)); // + " l:" + std::to_string(l) + " r:" + std::to_string(r) + " f:" + std::to_string(f) + " b:" + std::to_string(b);
 
   if (mouse_button == 3 && changed) { fovy -= 5.0; changed = false; } else if (mouse_button == 4 && changed) { fovy += 5.0; changed = false; }
 
@@ -486,10 +511,11 @@ void animation(void) {
       switch (i) {
         case 033: { } break; // Escape Key
         case 'Q': exit(EXIT_SUCCESS); break; // Quit
-        case 'w': { mvz -= speed_boost * sin(theta*M_PI/180)/2; mvx -= speed_boost * cos(theta*M_PI/180)/2; } break;
-        case 's': { mvz += speed_boost * sin(theta*M_PI/180)/2; mvx += speed_boost * cos(theta*M_PI/180)/2; } break;
-        case 'a': { mvx -= speed_boost * sin(theta*M_PI/180)/2; mvz += speed_boost * cos(theta*M_PI/180)/2; } break;
-        case 'd': { mvx += speed_boost * sin(theta*M_PI/180)/2; mvz -= speed_boost * cos(theta*M_PI/180)/2; } break;
+        case 'w': { mv_vel.z -= speed_boost * sin(theta*M_PI/180)/2; mv_vel.x -= speed_boost * cos(theta*M_PI/180)/2; } break;
+        case 's': { mv_vel.z += speed_boost * sin(theta*M_PI/180)/2; mv_vel.x += speed_boost * cos(theta*M_PI/180)/2; } break;
+        case 'a': { mv_vel.x -= speed_boost * sin(theta*M_PI/180)/2; mv_vel.z += speed_boost * cos(theta*M_PI/180)/2; } break;
+        case 'd': { mv_vel.x += speed_boost * sin(theta*M_PI/180)/2; mv_vel.z -= speed_boost * cos(theta*M_PI/180)/2; } break;
+        case ' ': { if (!fall) jump = true; } break; // Action
         case 'f': { action = true; } break; // Action
         // case ' ': { if (reload) { fire_gun = true; darts--; } } break; // Shoot
         case '1': { hallucinate = !hallucinate; } break; // Weapon 1
@@ -514,6 +540,11 @@ void animation(void) {
     } else {
       switch (i) {
         // case ' ': fire_gun = false; break; // Stop firing, not the same as bullet landing
+        // case 'w': { mv_vel.z = 0.0; mv_vel.x = 0.0; } break;
+        // case 's': { mv_vel.z = 0.0; mv_vel.x = 0.0; } break;
+        // case 'a': { mv_vel.x = 0.0; mv_vel.z = 0.0; } break;
+        // case 'd': { mv_vel.x = 0.0; mv_vel.z = 0.0; } break;
+        case ' ': { jump = false; } break; //wire
         case 'f': { action = false; } break; //wire
         case 'c': { toggle = true; } break; //fire
         case '`': { toggle = true; } break; //fire
@@ -530,6 +561,10 @@ void animation(void) {
     }
 
   }
+
+  mv_pos.x += mv_vel.x;
+  mv_pos.y += mv_vel.y;
+  mv_pos.z += mv_vel.z;
 
   lasttime=time;
 

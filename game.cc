@@ -24,15 +24,15 @@ void display(void) {
 
   glutSetWindowTitle(title_bar.c_str());
 
-  point4  eye(mvx + radius * cos(theta * M_PI/180) * cos(phi * M_PI/180),
-              radius * sin(phi * M_PI/180),
-              mvz + radius * sin(theta * M_PI/180) * cos(phi * M_PI/180),
+  point4  eye(mv_pos.x + radius * cos(theta * M_PI/180) * cos(phi * M_PI/180),
+              mv_pos.y + radius * sin(phi * M_PI/180),
+              mv_pos.z + radius * sin(theta * M_PI/180) * cos(phi * M_PI/180),
               1.0);
-  // point4  gun(mvx + radius * cos(theta * M_PI/180) * cos(phi * M_PI/180),
+  // point4  gun(mv_pos.x + radius * cos(theta * M_PI/180) * cos(phi * M_PI/180),
   //             radius * sin(phi * M_PI/180),
-  //             mvz + radius * sin(theta * M_PI/180) * cos(phi * M_PI/180),
+  //             mv_pos.z + radius * sin(theta * M_PI/180) * cos(phi * M_PI/180),
   //             1.0);
-  point4  at(mvx, 0.0, mvz, 1.0);
+  point4  at(mv_pos.x, mv_pos.y, mv_pos.z, 1.0);
   vec4    up(0.0, 1.0, 0.0, 0.0);
 
   glClearColor(SKY_R, SKY_G, SKY_B, 0.0);
@@ -50,7 +50,7 @@ void display(void) {
 
   // PLAYER
 
-// mvx - 0.4 * cos((theta - 30) * M_PI/180), agency_loc.y + 0.75, mvz - 0.4 * sin((theta - 30) * M_PI/180)
+// mv_pos.x - 0.4 * cos((theta - 30) * M_PI/180), agency_loc.y + 0.75, mv_pos.z - 0.4 * sin((theta - 30) * M_PI/180)
 
   // // DART
   // object(mv, model_view, 2.0, 0.0, -2.8, TIP_B, TIP_H, TIP_T, 0, 0, 0, TIP_SL, TIP_ST, 1);
@@ -61,22 +61,22 @@ void display(void) {
 
   if(!debug) {
     for (int i = 0; i < NUM_OBJECTS; i++) {
-      collision(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, wall_loc[i], wall_size[i], collide[i]);
+      collision(mv_pos.x, 0.0, mv_pos.z, PLAYER_W, PLAYER_H, PLAYER_D, wall_loc[i], wall_size[i], collide[i]);
     }
     for (int i = 0; i < NUM_BOOKCASE; i++) {
-      collision(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, bookcase_loc[i], bookcase_size[i], collide[i]);
+      collision(mv_pos.x, 0.0, mv_pos.z, PLAYER_W, PLAYER_H, PLAYER_D, bookcase_loc[i], bookcase_size[i], collide[i]);
     }
     for (int i = 0; i < NUM_DOORS; i++) {
-      if (!open_door[i]) collision(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, door_loc[i], door_size[i], collide[i]);
+      if (!open_door[i]) collision(mv_pos.x, 0.0, mv_pos.z, PLAYER_W, PLAYER_H, PLAYER_D, door_loc[i], door_size[i], collide[i]);
     }
     for (int i = 0; i < NUM_TABLES; i++) {
-      collision(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, table_loc[i], table_size[i], collide[i]);
+      collision(mv_pos.x, 0.0, mv_pos.z, PLAYER_W, PLAYER_H, PLAYER_D, table_loc[i], table_size[i], collide[i]);
     }
     for (int i = 0; i < NUM_GHOSTS; i++) {
-      collision(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, ghosts_loc[0], ghosts_size[0], g_die[0]);
+      collision(mv_pos.x, 0.0, mv_pos.z, PLAYER_W, PLAYER_H, PLAYER_D, ghosts_loc[0], ghosts_size[0], g_die[0]);
     }
     for (int i = 0; i < NUM_ZOMBIES; i++) {
-      collision(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, zombies_loc[i], zombies_size[i], z_die[i]);
+      collision(mv_pos.x, 0.0, mv_pos.z, PLAYER_W, PLAYER_H, PLAYER_D, zombies_loc[i], zombies_size[i], z_die[i]);
     }
   }
 
@@ -87,13 +87,13 @@ void display(void) {
   }
 
   for (int i = 0; i < NUM_DOORS; i++) {
-    proximity(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, door_loc[i], door_size[i], doors[i]);
+    proximity(mv_pos.x, 0.0, mv_pos.z, PLAYER_W, PLAYER_H, PLAYER_D, door_loc[i], door_size[i], doors[i]);
   }
   for (int i = 0; i < NUM_INTERACTABLES; i++) {
-    proximity(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, inter_loc[i], inter_size[i], proximal[i]);
+    proximity(mv_pos.x, 0.0, mv_pos.z, PLAYER_W, PLAYER_H, PLAYER_D, inter_loc[i], inter_size[i], proximal[i]);
   }
   for (int i = 0; i < NUM_PICKUPS; i++) {
-    proximity(mvx, 0.0, mvz, PLAYER_W, PLAYER_H, PLAYER_D, pickup_loc[i], pickup_size[i], pickup[i]);
+    proximity(mv_pos.x, 0.0, mv_pos.z, PLAYER_W, PLAYER_H, PLAYER_D, pickup_loc[i], pickup_size[i], pickup[i]);
   }
 
   // collision(&enemy_loc[0].x, 0.0, &enemy_loc[0].z, GHOST_W, GHOST_H, GHOST_D, wall_loc, wall_size, collide, NUM_OBJECTS);
@@ -181,25 +181,25 @@ void roof() {
 }
 
 void character() {
-  object(mv, model_view, mvx + 0.0, agency_loc.y + 1.15, mvz + 0.0, HAIR_W, HAIR_H, HAIR_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx + 0.0, agency_loc.y + 0.75, mvz + 0.0, FACE_W, FACE_H, FACE_D, SKIN_R, SKIN_G, SKIN_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx - 0.4 * cos((theta - 30) * M_PI/180), agency_loc.y + 0.75, mvz - 0.4 * sin((theta - 30) * M_PI/180), LENS_W, LENS_H, LENS_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx - 0.4 * cos((theta + 30) * M_PI/180), agency_loc.y + 0.75, mvz - 0.4 * sin((theta + 30) * M_PI/180), LENS_W, LENS_H, LENS_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx - 0.4 * cos(theta * M_PI/180), agency_loc.y + 0.875, mvz - 0.4 * sin(theta * M_PI/180), BRIDGE_W, BRIDGE_H, BRIDGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx + 0.0, agency_loc.y - 0.25, mvz + 0.0, SHIRT_W, SHIRT_H, SHIRT_D, SHIRT_R, SHIRT_G, SHIRT_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx + 0.1 * cos(theta * M_PI/180), agency_loc.y - 0.25, mvz + 0.1 * sin(theta * M_PI/180), SHIRT_W, SHIRT_H, SHIRT_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx - 0.25 * cos((theta - 0) * M_PI/180), agency_loc.y - 0.125, mvz - 0.25 * sin((theta - 0) * M_PI/180), TIE_W, TIE_H, TIE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx + 0.375 * cos((theta - 90) * M_PI/180), agency_loc.y - 0.25, mvz + 0.375  * sin((theta - 90) * M_PI/180), SUIT_W, SUIT_H, SUIT_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx + 0.375 * cos((theta + 90) * M_PI/180), agency_loc.y - 0.25, mvz + 0.375 * sin((theta + 90) * M_PI/180), SUIT_W, SUIT_H, SUIT_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx + 0.5 * cos((theta - 90) * M_PI/180), agency_loc.y - 0.375, mvz + 0.5 * sin((theta - 90) * M_PI/180), APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx + 0.5 * cos((theta + 90) * M_PI/180), agency_loc.y - 0.375, mvz + 0.5 * sin((theta + 90) * M_PI/180), APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx + 0.25 * cos((theta - 90) * M_PI/180), agency_loc.y - 1.5, mvz + 0.25 * sin((theta - 90) * M_PI/180), APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
-  object(mv, model_view, mvx + 0.25 * cos((theta + 90) * M_PI/180), agency_loc.y - 1.5, mvz + 0.25 * sin((theta + 90) * M_PI/180), APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x + 0.0, agency_loc.y + 1.15, mv_pos.z + 0.0, HAIR_W, HAIR_H, HAIR_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x + 0.0, agency_loc.y + 0.75, mv_pos.z + 0.0, FACE_W, FACE_H, FACE_D, SKIN_R, SKIN_G, SKIN_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x - 0.4 * cos((theta - 30) * M_PI/180), agency_loc.y + 0.75, mv_pos.z - 0.4 * sin((theta - 30) * M_PI/180), LENS_W, LENS_H, LENS_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x - 0.4 * cos((theta + 30) * M_PI/180), agency_loc.y + 0.75, mv_pos.z - 0.4 * sin((theta + 30) * M_PI/180), LENS_W, LENS_H, LENS_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x - 0.4 * cos(theta * M_PI/180), agency_loc.y + 0.875, mv_pos.z - 0.4 * sin(theta * M_PI/180), BRIDGE_W, BRIDGE_H, BRIDGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x + 0.0, agency_loc.y - 0.25, mv_pos.z + 0.0, SHIRT_W, SHIRT_H, SHIRT_D, SHIRT_R, SHIRT_G, SHIRT_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x + 0.1 * cos(theta * M_PI/180), agency_loc.y - 0.25, mv_pos.z + 0.1 * sin(theta * M_PI/180), SHIRT_W, SHIRT_H, SHIRT_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x - 0.25 * cos((theta - 0) * M_PI/180), agency_loc.y - 0.125, mv_pos.z - 0.25 * sin((theta - 0) * M_PI/180), TIE_W, TIE_H, TIE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x + 0.375 * cos((theta - 90) * M_PI/180), agency_loc.y - 0.25, mv_pos.z + 0.375  * sin((theta - 90) * M_PI/180), SUIT_W, SUIT_H, SUIT_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x + 0.375 * cos((theta + 90) * M_PI/180), agency_loc.y - 0.25, mv_pos.z + 0.375 * sin((theta + 90) * M_PI/180), SUIT_W, SUIT_H, SUIT_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x + 0.5 * cos((theta - 90) * M_PI/180), agency_loc.y - 0.375, mv_pos.z + 0.5 * sin((theta - 90) * M_PI/180), APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x + 0.5 * cos((theta + 90) * M_PI/180), agency_loc.y - 0.375, mv_pos.z + 0.5 * sin((theta + 90) * M_PI/180), APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x + 0.25 * cos((theta - 90) * M_PI/180), agency_loc.y - 1.5, mv_pos.z + 0.25 * sin((theta - 90) * M_PI/180), APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
+  object(mv, model_view, mv_pos.x + 0.25 * cos((theta + 90) * M_PI/180), agency_loc.y - 1.5, mv_pos.z + 0.25 * sin((theta + 90) * M_PI/180), APPENDAGE_W, APPENDAGE_H, APPENDAGE_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, 0, 0, 0, 0); // translate down half of the object
  }
 
  void hud() {
-   object(mv, model_view, mvx + (radius - 1) * cos((theta - 30) * M_PI/180) * cos((phi - 30) * M_PI/180), agency_loc.y + (radius - 1) * sin((phi - 30) * M_PI/180), mvz + (radius - 1) * sin((theta - 30) * M_PI/180) * cos((phi - 30) * M_PI/180), LENS_W, LENS_H, LENS_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, phi, 0, 0, 0); // translate down half of the object
-   object(mv, model_view, mvx + (radius - 1) * cos((theta - 30) * M_PI/180) * cos((phi - 30) * M_PI/180), agency_loc.y + (radius - 1) * sin((phi - 30) * M_PI/180), mvz + (radius - 1) * sin((theta - 30) * M_PI/180) * cos((phi - 10) * M_PI/180), LENS_W, LENS_H, LENS_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, phi, 0, 0, 0); // translate down half of the object
+   object(mv, model_view, mv_pos.x + (radius - 1) * cos((theta - 30) * M_PI/180) * cos((phi - 30) * M_PI/180), agency_loc.y + (radius - 1) * sin((phi - 30) * M_PI/180), mv_pos.z + (radius - 1) * sin((theta - 30) * M_PI/180) * cos((phi - 30) * M_PI/180), LENS_W, LENS_H, LENS_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, phi, 0, 0, 0); // translate down half of the object
+   object(mv, model_view, mv_pos.x + (radius - 1) * cos((theta - 30) * M_PI/180) * cos((phi - 30) * M_PI/180), agency_loc.y + (radius - 1) * sin((phi - 30) * M_PI/180), mv_pos.z + (radius - 1) * sin((theta - 30) * M_PI/180) * cos((phi - 10) * M_PI/180), LENS_W, LENS_H, LENS_D, AGENCY_R, AGENCY_G, AGENCY_B, 0, -theta, phi, 0, 0, 0); // translate down half of the object
 }
 
 void door() {
@@ -386,9 +386,9 @@ void gun_pickup() {
   object(pv, model_view, table_loc[2].x + 0.1*0.2, table_loc[2].y + -1.1*0.2, table_loc[2].z + 0.0*0.2, HANDLE_W*0.2, HANDLE_H*0.2, HANDLE_D*0.2, HANDLE_R, HANDLE_G, HANDLE_B, 0, 0, 90, 0, 0, 0);}
 
 void gun() {
-  object(pv, model_view, mvx - 5.0 * cos((theta - 27) * M_PI/180)*0.2, 0.0*0.2, mvz - 5.0 * sin((theta - 27) * M_PI/180)*0.2, BARREL_W*0.2, BARREL_H*0.2, BARREL_D*0.2, BARREL_R, BARREL_G, BARREL_B, 0, -theta + 90, 0, 0, 0, 0);
-  object(pv, model_view, mvx - 5.75 * cos((theta - 20) * M_PI/180)*0.2, -0.5*0.2, mvz - 5.75 * sin((theta - 20) * M_PI/180)*0.2, SIGHT_W*0.2, SIGHT_H*0.2, SIGHT_D*0.2, SIGHT_R, SIGHT_G, SIGHT_B, 0, -theta + 90, 0, 0, 0, 0);
-  object(pv, model_view, mvx - 4.0 * cos((theta - 35) * M_PI/180)*0.2, -1.1*0.2, mvz - 4.0 * sin((theta - 35) * M_PI/180)*0.2, HANDLE_W*0.2, HANDLE_H*0.2, HANDLE_D*0.2, HANDLE_R, HANDLE_G, HANDLE_B, 0, -theta + 90, 0, 0, 0, 0);
+  object(pv, model_view, mv_pos.x - 5.0 * cos((theta - 27) * M_PI/180)*0.2, 0.0*0.2, mv_pos.z - 5.0 * sin((theta - 27) * M_PI/180)*0.2, BARREL_W*0.2, BARREL_H*0.2, BARREL_D*0.2, BARREL_R, BARREL_G, BARREL_B, 0, -theta + 90, 0, 0, 0, 0);
+  object(pv, model_view, mv_pos.x - 5.75 * cos((theta - 20) * M_PI/180)*0.2, -0.5*0.2, mv_pos.z - 5.75 * sin((theta - 20) * M_PI/180)*0.2, SIGHT_W*0.2, SIGHT_H*0.2, SIGHT_D*0.2, SIGHT_R, SIGHT_G, SIGHT_B, 0, -theta + 90, 0, 0, 0, 0);
+  object(pv, model_view, mv_pos.x - 4.0 * cos((theta - 35) * M_PI/180)*0.2, -1.1*0.2, mv_pos.z - 4.0 * sin((theta - 35) * M_PI/180)*0.2, HANDLE_W*0.2, HANDLE_H*0.2, HANDLE_D*0.2, HANDLE_R, HANDLE_G, HANDLE_B, 0, -theta + 90, 0, 0, 0, 0);
 }
 
 void zombies() {
